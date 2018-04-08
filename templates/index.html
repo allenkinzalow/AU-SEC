@@ -6,11 +6,13 @@
       <!-- CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/libraries/timeline.css') }}?v=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/aumed.css') }}?v=1.0">
 
     <!-- Javascript -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <script src="{{ url_for('static', filename='js/libraries/timeline.js') }}"></script>
     <script src="{{ url_for('static', filename='js/aumed.js') }}"></script>
     <title>AU Medical Admin</title>
     <base href="/">
@@ -114,6 +116,35 @@
                     </div>
                 </div>
             </div>
+
+            <section class="cd-timeline js-cd-timeline">
+                <div class="cd-timeline__container">
+                    <div class="cd-timeline__block js-cd-block">
+                        <div class="cd-timeline__img cd-timeline__img--picture js-cd-img">
+                                <i class="material-icons">lock</i>
+                        </div> <!-- cd-timeline__img -->
+        
+                        <div class="cd-timeline__content js-cd-content">
+                            <h2>Perscription Updated</h2>
+                            <p>Allen Kinzalow's perscription was updated from BLAH TO BLAH.</p>
+                            <span class="cd-timeline__date">Jan 14</span>
+                        </div> <!-- cd-timeline__content -->
+                    </div> <!-- cd-timeline__block -->
+        
+                    <div class="cd-timeline__block js-cd-block">
+                        <div class="cd-timeline__img cd-timeline__img--movie js-cd-img">
+                                <i class="material-icons">person_add</i>
+                        </div> <!-- cd-timeline__img -->
+        
+                        <div class="cd-timeline__content js-cd-content">
+                            <h2>Title of section 2</h2>
+                            <p>Allen Kinzalow's perscription amount was changed from BLAH TO BLAH.</p>
+                            <span class="cd-timeline__date">Jan 18</span>
+                        </div> <!-- cd-timeline__content -->
+                    </div> <!-- cd-timeline__block -->
+        
+                </div>
+            </section>
         </div>
   </body>
 </html>
