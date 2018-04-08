@@ -12,7 +12,10 @@ def craftQuery(dataDict):
     command = dataDict["command"]
     table_name = dataDict["table_name"]
     row_ID = dataDict["row_id"]
-    column_names = dataDict["columns"]
+    if "columns" in dataDict:
+    	column_names = dataDict["columns"]
+    else:
+        column_names = []
     query = """ """
     if command == "update":
          values = dataDict["values"]
@@ -45,13 +48,14 @@ def craftQuery(dataDict):
          print (row_ID)
          return query,[row_ID]
     elif command == "insert":
+         auth_ID = dataDict["authorized_user"] 
          values = dataDict["values"]
-         query += "INSERT INTO patients(id,"
+         query += "INSERT INTO "+ table_name +" (id,authorized_user,"
          for c,item in enumerate(column_names):
              query+=item
              if c < len(column_names) - 1:
                   query+=","
-         query+=") VALUES(%s,"
+         query+=") VALUES(%s,%s,"
          for c2,value in enumerate(values):
              if isinstance(value,int):
                  query+= "%d"
@@ -60,6 +64,7 @@ def craftQuery(dataDict):
              if c2 < len(values) - 1:
                  query += ","
          query+=")"
+         values.insert(0,auth_ID)
          values.insert(0,row_ID)
          print (query)
          print (values)

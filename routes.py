@@ -72,17 +72,18 @@ def edit_policy():
 @routes.route('/api/data/update', methods=['PUT'])
 def update_data():
     
-    query_dict = {"row_id":request.json["row_id"], "table_name":request.json["table_name"],
-                  "columns":request.json["new_data"].keys(),
-                  "values":list(request.json["new_data"].values())}
+    query_dict = {"command":"update","row_id":request.json["row_id"], "table_name":request.json["table_name"],
+                  "columns":request.json["data"].keys(),
+                  "values":list(request.json["data"].values())}
     SQL_query,SQL_values = craftQuery(query_dict)    
-    return 
+    return SQL_query
 
 # {row_id: id, table_name: table, data: {column_name: "", }}
 @routes.route('/api/data/select', methods=['PUT'])
 def select_data():
-    if data in request.json:
-        query_dict = {"columns":request.json["data"].keys()
+    query_dict = {"command":"select"}
+    if "data" in request.json:
+        query_dict = {"columns":request.json["data"].keys()}
     query_dict["table_name"] = request.json["table_name"]
     query_dict["row_id"] = request.json["row_id"]
     #the value returned here is a single item list containing the row_id
@@ -90,17 +91,17 @@ def select_data():
     return SQL_query
 
 
-# {data: {column_names: column_data}, table_name: table, authorized_user: id}
+# {data: {column_names: column_data}, table_name: table, authorized_user: auth_id, row_id: id}
 @routes.route('/api/data/insert', methods=['POST'])
 def insert_data():
     if not check_json(request.json, 'authorized_user', 'data'):
         abort(400)
     columns = request.json["data"].keys()
     values = list(request.json["data"].values())
-    query_dict = {"columns":columns,"values":values,
+    query_dict = {"command":"insert","columns":columns,"values":values,
                   "table_name":request.json["table_name"], 
                   "row_id":request.json["row_id"],
-                  "auth_id":request.json["auth_id"]}
+                  "authorized_user":request.json["authorized_user"]}
     SQL_query,SQL_values = craftQuery(query_dict)
     return SQL_query
 
@@ -110,6 +111,7 @@ def delete_data():
     if not check_json(request.json, 'row_id'):
         abort(400)
     query_dict = dict(request.json)
+    query_dict["command"] = "delete"
     #the value returned here is a single item list containing the row_id
     SQL_query,SQL_values = craftQuery(query_dict)
     return SQL_query
