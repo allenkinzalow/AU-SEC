@@ -1,3 +1,7 @@
+body {
+    background-color: #f1f5f7;
+}
+
 #content_area {
     margin-top: 25px;
 }
@@ -21,6 +25,21 @@
 }
 #auth_perscription_med, #auth_original, #auth_new {
     font-weight: bold;
+}
+.cd-timeline__content h2 {
+    margin: 2px !important;
+}
+.cd-timeline__img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cd-timeline__img .material-icons {
+    width: 35px;
+    height: 35px;
+    font-size: 35px;
+    text-align: center;
+    color: white;
 }
 
 .row-data-field .btn-key {
