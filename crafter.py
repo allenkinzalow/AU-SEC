@@ -32,7 +32,7 @@ def craftQuery(dataDict):
          print (values)
          return query,values
     elif command == "select":
-         
+         return query
     elif command == "insert":
          values = dataDict["values"]
          query += "INSERT INTO patients(id,"
@@ -60,5 +60,5 @@ def craftQuery(dataDict):
         return "INVALID COMMAND"
 
 if __name__ == "__main__":
-    request = {"command":"update","table":"patients","id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"]
+    request = {"command":"update","table":"patients","id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"]}
     craftQuery(request)
