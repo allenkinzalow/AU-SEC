@@ -130,15 +130,15 @@ Primary style
     margin-top: -12px;
   }
   
-  .cd-timeline__img.cd-timeline__img--picture {
+  .cd-timeline__img.cd-timeline__img--green {
     background: #75ce66;
   }
   
-  .cd-timeline__img.cd-timeline__img--movie {
+  .cd-timeline__img.cd-timeline__img--red {
     background: #c03b44;
   }
   
-  .cd-timeline__img.cd-timeline__img--location {
+  .cd-timeline__img.cd-timeline__img--yellow {
     background: #f0ca45;
   }
   

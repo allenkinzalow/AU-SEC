@@ -16,6 +16,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
     <script src="{{ url_for('static', filename='js/libraries/timeline.js') }}"></script>
     <script src="{{ url_for('static', filename='js/aumed.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/util.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/schema.js') }}"></script>
     <title>AU Medical Admin</title>
     <base href="/">
 </head>
@@ -45,7 +47,7 @@
         </nav>
     </div>
     <div id="content_area">
-        <div class="row content-area">
+        <div class="row content-area" id="patients_card">
             <div class="col s8">
                 <div class="card">
                     <div class="card-content">
@@ -59,41 +61,7 @@
                             </div>
                         </div>
                         <div class="content-container">
-                            <ul class="collapsible">
-                                <li>
-                                    <div class="collapsible-header">Allen Kinzalow</div>
-                                    <div class="collapsible-body">
-                                        <div class="row row-data-field">
-                                            <div class="input-field col s5">
-                                                <select id="perscription_med">
-                                                    <option value="" disabled selected>Choose the perscription medicine</option>
-                                                    <option value="1">Option 1</option>
-                                                    <option value="2">Option 2</option>
-                                                    <option value="3">Option 3</option>
-                                                </select>
-                                                <label>Medicine</label>
-                                            </div>
-                                            <div class="input-field col s1">
-                                                <a class="btn-floating btn-small waves-effect waves-light blue tooltipped modal-trigger btn-key" data-position="top" data-tooltip="Data Policies"
-                                                    href="#dataPolicyModal" id="#medicineDataPolicyButton">
-                                                    <i class="tiny material-icons" href="#dataPolicyModal">vpn_key</i>
-                                                </a>
-                                            </div>
-                                            <div class="input-field col s5">
-                                                <input id="perscription_amount" type="text" class="validate">
-                                                <label for="perscription_amount">Amount</label>
-                                            </div>
-                                            <div class="input-field col s1">
-                                                <a class="btn-floating btn-small waves-effect waves-light blue tooltipped modal-trigger btn-key" data-position="top" data-tooltip="Data Policies"
-                                                    href="#dataPolicyModal" id="#dosageDataPolicyButton">
-                                                    <i class="tiny material-icons">vpn_key</i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <a class="waves-effect waves-light btn blue">Save</a>
-                                    </div>
-                                </li>
-                            </ul>
+                            <ul class="collapsible" id="patients_table"></ul>
                         </div>
                     </div>
                     <div class="card-action">
@@ -103,7 +71,7 @@
             </div>
         </div>
 
-        <div class="row content-area">
+        <div class="row content-area" id="authorization_card">
             <div class="col s8">
                 <div class="card">
                     <div class="card-content">
@@ -117,103 +85,135 @@
                             </div>
                         </div>
                         <div class="content-container">
-                            <ul class="collapsible">
-                                <li>
-                                    <div class="collapsible-header">Allen Kinzalow</div>
-                                    <div class="collapsible-body">
-                                        <div class="authorization-subtitle">
-                                            A change has been made to Allen Kinzalow's perscription for
-                                            <span id="auth_perscription_med">PERSCRIPTION_MED</span>
-                                            from
-                                            <span id="auth_original">ORIGINAL_VALUE</span>
-                                            to
-                                            <span id="auth_new">NEW_VALUE</span>.
-                                            <br /> As an authorizer for this user, you are required to approve this change.
-                                        </div>
-                                        <div class="authorization-actions">
-                                            <a class="waves-effect waves-light btn blue">Approve</a>
-                                            <a class="waves-effect waves-light btn red">Reject</a>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+                            <ul class="collapsible" id="authorization_table"></ul>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <section class="cd-timeline js-cd-timeline">
-                <div class="cd-timeline__container">
-                    <div class="cd-timeline__block js-cd-block">
-                        <div class="cd-timeline__img cd-timeline__img--picture js-cd-img">
-                            <i class="material-icons">lock</i>
-                        </div>
-                        <!-- cd-timeline__img -->
-
-                        <div class="cd-timeline__content js-cd-content">
-                            <h2>Perscription Updated</h2>
-                            <p>Allen Kinzalow's perscription was updated from BLAH TO BLAH.</p>
-                            <span class="cd-timeline__date">Jan 14</span>
-                        </div>
-                        <!-- cd-timeline__content -->
-                    </div>
-                    <!-- cd-timeline__block -->
-
-                    <div class="cd-timeline__block js-cd-block">
-                        <div class="cd-timeline__img cd-timeline__img--movie js-cd-img">
-                            <i class="material-icons">person_add</i>
-                        </div>
-                        <!-- cd-timeline__img -->
-
-                        <div class="cd-timeline__content js-cd-content">
-                            <h2>Title of section 2</h2>
-                            <p>Allen Kinzalow's perscription amount was changed from BLAH TO BLAH.</p>
-                            <span class="cd-timeline__date">Jan 18</span>
-                        </div>
-                        <!-- cd-timeline__content -->
-                    </div>
-                    <!-- cd-timeline__block -->
-
-                </div>
-            </section>
         </div>
-        <div id="dataPolicyModal" class="modal modal-fixed-footer">
-            <div class="modal-content">
-                <h4 id="dataPolicyModalHeader" class="left">Data Policies</h4>
-                <a id="addPolicyButton" class="waves-effect waves-light btn blue right">Add Policy</a>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Item Name</th>
-                            <th>Item Price</th>
-                        </tr>
-                    </thead>
+        
+        <section class="cd-timeline js-cd-timeline" id="timeline_section">
+            <div class="cd-timeline__container">
+                
+            </div>
+        </section>
+    </div>
 
-                    <tbody>
-                        <tr>
-                            <td>Alvin</td>
-                            <td>Eclair</td>
-                            <td>$0.87</td>
-                        </tr>
-                        <tr>
-                            <td>Alan</td>
-                            <td>Jellybean</td>
-                            <td>$3.76</td>
-                        </tr>
-                        <tr>
-                            <td>Jonathan</td>
-                            <td>Lollipop</td>
-                            <td>$7.00</td>
-                        </tr>
-                    </tbody>
-                </table>
+<!-- Re-usable scripts. -->
+<script type="text/html" id="patient_entry_template">
+    <li data-id="%id%">
+        <div class="collapsible-header">%name%</div>
+        <div class="collapsible-body">
+            <div class="row row-data-field">
+                <div class="input-field col s5">
+                    <select id="perscription_med">
+                        <option value="" disabled selected>Choose the perscription medicine</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label>Medicine</label>
+                </div>
+                <div class="input-field col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped modal-trigger btn-key" 
+                    data-position="top" 
+                    data-tooltip="Data Policies"
+                    href="#dataPolicyModal"
+                    id="#medicineDataPolicyButton">
+                        <i class="tiny material-icons" href="#dataPolicyModal">vpn_key</i>
+                    </a>
+                </div>
+                <div class="input-field col s5">
+                    <input id="perscription_amount" type="text" class="validate">
+                    <label for="perscription_amount">Amount</label>
+                </div>
+                <div class="input-field col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped modal-trigger btn-key" 
+                    data-position="top" 
+                    data-tooltip="Data Policies"
+                    href="#dataPolicyModal"
+                    id="#dosageDataPolicyButton">
+                        <i class="tiny material-icons">vpn_key</i>
+                    </a>
+                </div>
             </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat ">Done</a>
+            <a class="waves-effect waves-light btn blue">Save</a>
+        </div>
+    </li>
+</script>
+
+<script type="text/html" id="authorization_entry_template">
+    <li data-patient="%patient_id%" data-id="%authorization_id%">
+        <div class="collapsible-header">%name%</div>
+        <div class="collapsible-body">
+            <div class="authorization-subtitle">
+                A change has been made to %name%'s perscription for
+                <span id="auth_perscription_med">%medical_prescription%</span>
+                from
+                <span id="auth_original">%medical_old_value%</span>
+                to
+                <span id="auth_new">%medical_new_value%</span>.
+                <br /> As an authorizer for this user, you are required to approve this change.
             </div>
+            <div class="authorization-actions">
+                <a class="waves-effect waves-light btn blue">Approve</a>
+                <a class="waves-effect waves-light btn red">Reject</a>
+            </div>
+        </div>
+    </li>
+</script>
+
+<script type="text/html" id="timeline_entry_template">
+    <div class="cd-timeline__block js-cd-block" data-id="%id%">
+        <div class="cd-timeline__img cd-timeline__img--%color% js-cd-img">
+                <i class="material-icons">%icon%</i>
+        </div>
+
+        <div class="cd-timeline__content js-cd-content">
+            <h2>%title%</h2>
+            <p>%action%</p>
+            <span class="cd-timeline__date">%date%</span>
         </div>
     </div>
+</script>
+
+<!-- Modals & Dropdowns -->
+<div id="dataPolicyModal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4 id="dataPolicyModalHeader" class="left">Data Policies</h4>
+        <a id="addPolicyButton" class="waves-effect waves-light btn blue right">Add Policy</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Item Name</th>
+                    <th>Item Price</th>
+                </tr>
+            </thead>
+    
+            <tbody>
+                <tr>
+                    <td>Alvin</td>
+                    <td>Eclair</td>
+                    <td>$0.87</td>
+                </tr>
+                <tr>
+                    <td>Alan</td>
+                    <td>Jellybean</td>
+                    <td>$3.76</td>
+                </tr>
+                <tr>
+                    <td>Jonathan</td>
+                    <td>Lollipop</td>
+                    <td>$7.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat ">Done</a>
+    </div>
+</div>
 </body>
 
 </html>
