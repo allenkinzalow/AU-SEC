@@ -46,9 +46,9 @@ body {
     display: none;
 } */
 
-.row-data-field:hover .btn-key {
+/* .row-data-field:hover .btn-key {
     display: inline-block;
-}
+} */
 
 /* MATERIALIZE OVERRIDES */
 nav .brand-logo {

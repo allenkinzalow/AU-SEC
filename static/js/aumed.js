@@ -3,7 +3,7 @@ AUMed = {
     load: function() {
         AUMed.UI.nav.setup();
         AUMed.UI.patients.open();
-        //AUMed.UI.timeline.open();
+        AUMed.UI.timeline.open();
     },
     loadColumnPoliciesForUser: function(auth_id, columnName) {
         AUMed.UI.policies.populate(auth_id, columnName);
@@ -38,13 +38,13 @@ AUMed = {
                     }, "")
                 );
 
-                $(document).on('click', '.btn-medicine-policy', function () {
+                $(document).delegate( '.btn-medicine-policy', 'click', function () {
                     console.log('clicked medicine..');
                     columnName = 'medicine'
-                    AUMed.loadColumnPoliciesForUser(auth_id, columnName)
+                    AUMed.loadColumnPoliciesForUser('12345', columnName)
                 });
 
-                $(document).on('click', '.btn-amount-policy', function () {
+                $(document).delegate('.btn-amount-policy', 'click', function () {
                     console.log('clicked amount..');
                     columnName = 'amount'
                     AUMed.loadColumnPoliciesForUser(auth_id, columnName)
@@ -116,7 +116,7 @@ AUMed = {
                 this._policies.push(new AUMed.Schema.Policy({policy_id: "12345", name: "Allen Kinzalow"}));
                 this._policies.push(new AUMed.Schema.Policy({policy_id: "12346", name: "Haven Barnes"}));
                 $('#policies_table').html(
-                    this._patients.reduce(function(str, patient) {
+                    this._policies.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: patient.data_id,
                             name: patient.name
@@ -124,6 +124,9 @@ AUMed = {
                     }, "")
                 );
                 M.AutoInit();
+                elem = document.querySelector('#dataPolicyModal');
+                instance = M.Modal.init(elem);
+                instance.open();
             }
         },
         authorizations: {},
