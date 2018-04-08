@@ -24,26 +24,24 @@ class Dispatcher():
 						seconds_to_expire=seconds_to_expire,
 						details=details,
 						hidden_details=hidden_details)
-
-		return response, auth_id
-
-	def getResponseStatus(self, response, auth_id):
-		""" Verify valid response and use response uuid to find and return the push authorization result """
-
-		##Verify valid response
+		#Verify valid response
 		if response.ok():
-			uuid = response.get_uuid()
-			status_response = self.authy_api.one_touch.get_approval_status(uuid)
-			if status_response.ok():
-                		# one of 'pending', 'approved', 'denied', or 'expired'
-				approval_status = status_response.content['approval_request']['status']
-			else:
-				approval_status = "Response status fizzled..."
-				print(resp.errors())
+                        uuid = response.get_uuid()
 		else:
-			approval_status = "Response wasn't valid..."
-			print(response.errors())
+                        uuid = -1
+                        print(response.errors())
 
+		return uuid, auth_id
+
+	def getResponseStatus(self, uuid, auth_id):
+		""" Use response uuid to find and return the push authorization result """
+
+		status_response = self.authy_api.one_touch.get_approval_status(uuid)
+		if status_response.ok():
+               		# one of 'pending', 'approved', 'denied', or 'expired'
+			approval_status = status_response.content['approval_request']['status']
+		else:
+			approval_status = "Response status fizzled..."
 		return approval_status, auth_id
 
 
@@ -61,4 +59,4 @@ if __name__ == '__main__':
 
 	#Basic use demo
 	pushBoy = Dispatcher()
-	resp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
+	uuid, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
