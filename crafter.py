@@ -32,7 +32,15 @@ def craftQuery(dataDict):
          print (values)
          return query,values
     elif command == "select":
-         return query
+         query = "SELECT "
+         for c,item in enumerate(column_names):
+             query += item
+             if c < len(column_names) - 1:
+                 query += ", "
+         query += " FROM " + table_name + " WHERE id = %s"
+         print (query)
+         print (user_ID)
+         return query,[user_ID]
     elif command == "insert":
          values = dataDict["values"]
          query += "INSERT INTO patients(id,"
@@ -55,10 +63,11 @@ def craftQuery(dataDict):
          return query,values           
     elif command == "delete":
         query += "DELETE FROM " + table_name + " WHERE id = %s"
-        return query,[user_id]
+        print (query)
+        return query,[user_ID]
     else:
         return "INVALID COMMAND"
 
 if __name__ == "__main__":
-    request = {"command":"update","table":"patients","id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"]}
+    request = {"command":"delete","table":"patients","id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"]}
     craftQuery(request)
