@@ -16,34 +16,32 @@ class Dispatcher():
 
         #Place backend data inside hidden_details dict
         hidden_details={}
-        hidden_details["auth_id"]=auth_id
+        hidden_details["auth_id"] = auth_id
 
-        #Package all the mod_msg info into a response and send it on its way
+            #Package all the mod_msg info into a response and send it on its way
         response = self.authy_api.one_touch.send_request(user_id,
-                                                message,
-                                                seconds_to_expire=seconds_to_expire,
-                                                details=details,
-                                                hidden_details=hidden_details)
-
-        return response, auth_id
-
-    def getResponseStatus(self, response, auth_id):
-        """ Verify valid response and use response uuid to find and return the push authorization result """
-
-        ##Verify valid response
+                        message,
+                        seconds_to_expire=seconds_to_expire,
+                        details=details,
+                        hidden_details=hidden_details)
+        #Verify valid response
         if response.ok():
-            uuid = response.get_uuid()
-            status_response = self.authy_api.one_touch.get_approval_status(uuid)
-            if status_response.ok():
-                # one of 'pending', 'approved', 'denied', or 'expired'
-                approval_status = status_response.content['approval_request']['status']
-            else:
-                approval_status = "Response status fizzled..."
-                #print(resp.errors())
+                        uuid = response.get_uuid()
         else:
-            approval_status = "Response wasn't valid..."
-            #print(response.errors())
+                        uuid = -1
+                        print(response.errors())
 
+        return uuid, auth_id
+
+    def getResponseStatus(self, uuid, auth_id):
+        """ Use response uuid to find and return the push authorization result """
+
+        status_response = self.authy_api.one_touch.get_approval_status(uuid)
+        if status_response.ok():
+                    # one of 'pending', 'approved', 'denied', or 'expired'
+            approval_status = status_response.content['approval_request']['status']
+        else:
+            approval_status = "Response status fizzled..."
         return approval_status, auth_id
 
 
@@ -61,9 +59,4 @@ if __name__ == '__main__':
 
     #Basic use demo
     pushBoy = Dispatcher()
-    resp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
-    
-    ##These debug lines will only print pending for status after getRespStatus changes...
-    #tuple=pushBoy.getResponseStatus(resp,exp,a_id)
-    #print("Status: " + str(tuple[0]) + "\nAuthorization ID: " + str(tuple[1]))
-
+    uuid, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
