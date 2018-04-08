@@ -33,20 +33,13 @@ class Dispatcher():
 	##Verify valid response
 	if response.ok():
     		uuid = response.get_uuid()
-    		start = time.time()
-    		end = time.time()
-    		#Loop until request has been approved/denied or expired
-    		while(start-end < seconds_to_expire):
-			status_response = self.authy_api.one_touch.get_approval_status(uuid)
-    			if status_response.ok():
-        			# one of 'pending', 'approved', 'denied', or 'expired'
-        			approval_status = status_response.content['approval_request']['status']
-        			if((approval_status=="approved") | (approval_status=="denied")):
-					break
-			else:
-				approval_status = "Response status fizzled..."
-        			print resp.errors()
-				break
+		status_response = self.authy_api.one_touch.get_approval_status(uuid)
+    		if status_response.ok():
+        		# one of 'pending', 'approved', 'denied', or 'expired'
+        		approval_status = status_response.content['approval_request']['status']
+		else:
+			approval_status = "Response status fizzled..."
+        		print resp.errors()
 	else:
 		approval_status = "Response wasn't valid..."
 		print response.errors()
@@ -69,6 +62,8 @@ if __name__ == '__main__':
     #Basic use demo
     pushBoy = Dispatcher()
     resp, exp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
-    tuple=pushBoy.getResponseStatus(resp,exp,a_id)
-    print("Status: " + str(tuple[0]) + "\nAuthorization ID: " + str(tuple[1]))
+    
+    ##These debug lines will only print pending for status after getRespStatus changes...
+    #tuple=pushBoy.getResponseStatus(resp,exp,a_id)
+    #print("Status: " + str(tuple[0]) + "\nAuthorization ID: " + str(tuple[1]))
 
