@@ -12,6 +12,17 @@
     margin: 10px;
 }
 
+.authorization-subtitle {
+    margin: 10px 0px;
+    font-size: 16px;
+}
+.authorization-actions * {
+    margin: 0px 5px;
+}
+#auth_perscription_med, #auth_original, #auth_new {
+    font-weight: bold;
+}
+
 /* MATERIALIZE OVERRIDES */
 nav .brand-logo {
     margin-left: 10px;
