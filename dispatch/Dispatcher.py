@@ -39,10 +39,10 @@ class Dispatcher():
 				approval_status = status_response.content['approval_request']['status']
 			else:
 				approval_status = "Response status fizzled..."
-				#print(resp.errors())
+				print(resp.errors())
 		else:
 			approval_status = "Response wasn't valid..."
-			#print(response.errors())
+			print(response.errors())
 
 		return approval_status, auth_id
 
@@ -62,7 +62,3 @@ if __name__ == '__main__':
 	#Basic use demo
 	pushBoy = Dispatcher()
 	resp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
-
-	##These debug lines will only print pending for status after getRespStatus changes...
-	#tuple=pushBoy.getResponseStatus(resp,exp,a_id)
-	#print("Status: " + str(tuple[0]) + "\nAuthorization ID: " + str(tuple[1]))
