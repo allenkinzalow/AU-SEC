@@ -165,7 +165,7 @@ def insert_data():
 def delete_data():
     if not check_json(request.json, 'data_id'):
         abort(400)
-    policy_bitwise = 0
+    policy_bitwise = '000000'
     policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
     if policy:
         policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
@@ -187,9 +187,9 @@ def delete_data():
     # Needs notify
     if int(str(policy_bitwise)[3]):
         print("NEEDS NOTIFY")
-        
+
     # Go ahead and delete
-    patient = Patient.query.get(request.json['data_id']).delete()
+    patient = Patient.query.filter(Patient.data_id == request.json['data_id']).delete()
     db_session.commit()
     return make_response(jsonify({'status': 'success'}))
 
