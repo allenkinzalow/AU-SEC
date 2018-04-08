@@ -25,9 +25,9 @@ class Dispatcher():
 	                                        details=details,
 	                                        hidden_details=hidden_details)
 
-	return response, seconds_to_expire, auth_id
+	return response, auth_id
 
-    def getResponseStatus(self, response, seconds_to_expire, auth_id):
+    def getResponseStatus(self, response, auth_id):
         """ Verify valid response and use response uuid to find and return the push authorization result """
 
 	##Verify valid response
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     #Basic use demo
     pushBoy = Dispatcher()
-    resp, exp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
+    resp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
     
     ##These debug lines will only print pending for status after getRespStatus changes...
     #tuple=pushBoy.getResponseStatus(resp,exp,a_id)
