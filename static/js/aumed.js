@@ -1,4 +1,4 @@
-
 $(document).ready(() => {
-    M.AutoInit();
+  M.AutoInit();
+
 });

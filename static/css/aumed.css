@@ -23,6 +23,20 @@
     font-weight: bold;
 }
 
+.modal-fixed-header {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    position: absolute;
+    top: 0;
+}
+
+.row-data-field .btn-key {
+    display: none;
+}
+
+.row-data-field:hover .btn-key {
+    display: inline-block;
+}
+
 /* MATERIALIZE OVERRIDES */
 nav .brand-logo {
     margin-left: 10px;
