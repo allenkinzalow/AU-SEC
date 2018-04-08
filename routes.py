@@ -124,16 +124,15 @@ def view_data_history():
 def send_auth_request():
     if not check_json(request.json, insert_Relevant_Criteria_Here):
         abort(400)
-    else:
-        ##authorization_id = ?
-        ##authy_user_id = ?
-        ##message=?
-        ##time_Limit=?
-        ##details={}
-        ####details["Doctor"]=?
-        ####details["Medicine"]=?
-        ####details["Dosage"]=?
-
+    
+    ##authorization_id = ?
+    ##authy_user_id = ?
+    ##message=?
+    ##time_Limit=?
+    ##details={}
+    ####details["Doctor"]=?
+    ####details["Medicine"]=?
+    ####details["Dosage"]=?
     pusher = Dispatcher()
     uuid, authy_auth_id = pusher.oneTouchAuth(authorization_id,authy_user_id,message,time_Limit,details)
     ##uuid and authy likely need to be put into a table. Unfamiliar with db setup so not sure which one.
@@ -143,7 +142,6 @@ def send_auth_request():
 def get_auth_update():
     if not check_json(request.json, insert_Relevant_Criteria_Here):
         abort(400)
-    else:
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
     uuid = (request.json['approval_request'])['uuid']
     auth_result=(request.json['success'])
