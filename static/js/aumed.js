@@ -2,7 +2,8 @@
 AUMed = {
     load: function() {
         
-        AUMed.UI.patients.populate();
+        AUMed.UI.patients.open();
+        AUMed.UI.timeline.open();
     },
     UI: {
         patients: {
@@ -21,9 +22,63 @@ AUMed = {
                 );
                 M.AutoInit();
             },
+            open: function() {
+                $('#patients_card').show();
+                this.populate();
+            },
+            close: function() {
+                $('#patients_card').hide();
+            },
         },
-        authorizations: {},
-        timeline: {},
+        authorizations: {
+            _pending_auths: [],
+            open: function() {
+                $('#authorization_card').show();
+                this.populate();
+            },
+            close: function() {
+                $('#authorization_card').hide();
+            },
+        },
+        timeline: {
+            _history: [],
+            populate: function() {
+                this._history.push(new AUMed.Schema.History({
+                    data_id: "12345", 
+                    op: "update",
+                    old_value: "5",
+                    new_value: "10",
+                    column: "amount",
+                }));
+                this._history.push(new AUMed.Schema.History({
+                    data_id: "12345", 
+                    op: "update",
+                    old_value: "1",
+                    new_value: "5",
+                    column: "amount",
+                }));
+                $('#timeline_table').html(
+                    this._history.reduce(function(str, item) {
+                        return str +  AUMed.Util.template($('#timeline_entry_template').html(), {
+                            id: item.data_id,
+                            color: "green",
+                            icon: "lock",
+                            title: item.field + " " + item.operation,
+                            action: "this is a test!",
+                            date: Date.now()
+                        });
+                    }, "")
+                );
+                M.AutoInit();
+            },
+            open: function() {
+                $('#timeline_section').show();
+                this.populate();
+            },
+            close: function() {
+                $('#timeline_section').hide();
+            },
+        },
 
     },
 };
