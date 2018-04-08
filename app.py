@@ -1,3 +1,4 @@
+
 from flask import Flask, jsonify, make_response, request, abort
 from datetime import datetime
 from database import db_session, init_db
@@ -12,8 +13,6 @@ u = Authorizer_User(1, 'lmao@gmail.com')
 db_session.add(u)
 db_session.commit()
 
-
-
 def check_json(json, *params):
     if not json:
         return False
@@ -23,7 +22,7 @@ def check_json(json, *params):
     return True
 
 @app.route('/')
-def homepage():
+def index():
     the_time = datetime.now().strftime("%A, %d %b %Y %l:%M %p")
 
     return """
@@ -55,7 +54,6 @@ def edit_user():
         abort(400)
 
     # Database stuff here
-
     return
 
 # {data_id: id, authorizers: [id1, id2, ...], column_name: name, table_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
@@ -109,6 +107,13 @@ def not_found(error):
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+@app.route('/patients')
+def patients():
+    return """
+    <h1>Patient: John Doe</h1>
+    <p>Blood Type: A</p>
+    """
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
