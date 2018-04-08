@@ -142,11 +142,11 @@
             <a class="waves-effect waves-light btn blue">Save</a>
         </div>
     </li>
-</script>
+    </script>
 
     <script type="text/html" id="policy_entry_template">
     <li>
-        <div class="collapsible-header">%name%</div>
+        <div class="collapsible-header">%policy_id%</div>
         <div class="collapsible-body">
             <div class="row row-data-field">
                 <div class="input-field col s6">
@@ -165,7 +165,7 @@
             <a class="waves-effect waves-light btn red">Remove</a>
         </div>
     </li>
-</script>
+    </script>
 
     <script type="text/html" id="authorization_entry_template">
     <li data-patient="%patient_id%" data-id="%authorization_id%">
@@ -205,8 +205,10 @@
     <!-- Modals & Dropdowns -->
     <div id="dataPolicyModal" class="modal modal-fixed-footer">
         <div class="modal-content">
-            <h4 id="dataPolicyModalHeader" class="left">Data Policies</h4>
-            <a id="addPolicyButton" class="waves-effect waves-light btn blue right">Add Policy</a>
+            <div>
+                    <h4 id="dataPolicyModalHeader" class="left">Data Policies</h4>
+                    <a id="addPolicyButton" class="waves-effect waves-light btn blue right">Add Policy</a>
+            </div>
             <ul id="policies_table"></ul>
         </div>
         <div class="modal-footer">

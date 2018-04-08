@@ -39,13 +39,11 @@ AUMed = {
                 );
 
                 $(document).delegate( '.btn-medicine-policy', 'click', function () {
-                    console.log('clicked medicine..');
                     columnName = 'medicine'
                     AUMed.loadColumnPoliciesForUser('12345', columnName)
                 });
 
                 $(document).delegate('.btn-amount-policy', 'click', function () {
-                    console.log('clicked amount..');
                     columnName = 'amount'
                     AUMed.loadColumnPoliciesForUser(auth_id, columnName)
                 });
@@ -112,9 +110,12 @@ AUMed = {
         policies: {
             _policies: [],
             populate: function(auth_id, columnName) {
-                // todo: use API instead of hardcoding.
-                this._policies.push(new AUMed.Schema.Policy({policy_id: "12345", name: "Allen Kinzalow"}));
-                this._policies.push(new AUMed.Schema.Policy({policy_id: "12346", name: "Haven Barnes"}));
+                this._policies = [];
+
+                // todo: use API instead of hardcoding.s
+                this._policies.push(new AUMed.Schema.Policy({policy_id: "12345", group_id: "93939"}));
+                this._policies.push(new AUMed.Schema.Policy({policy_id: "12346", group_id: "21919"}));
+                
                 $('#policies_table').html(
                     this._policies.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
@@ -123,9 +124,10 @@ AUMed = {
                         });
                     }, "")
                 );
+                
                 M.AutoInit();
                 elem = document.querySelector('#dataPolicyModal');
-                instance = M.Modal.init(elem);
+                instance = M.Modal.init(elem, );
                 instance.open();
             }
         },
@@ -137,6 +139,5 @@ AUMed = {
 $(document).ready(() => {
     M.AutoInit();
     AUMed.load();
-
 });
 
