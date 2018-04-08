@@ -6,10 +6,5 @@ target 'AU-SEC' do
   use_frameworks!
 
   # Pods for AU-SEC
-  pod 'SwiftyJSON'
-end
-
-target 'NotificationService' do
-  use_frameworks!
-
+  pod 'Alamofire'
 end

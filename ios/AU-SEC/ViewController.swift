@@ -1,20 +1,25 @@
 //
-//  InitialViewController.swift
+//  ViewController.swift
 //  AU-SEC
 //
-//  Created by Haven Barnes on 10/21/17.
-//  Copyright © 2017 Haven Barnes. All rights reserved.
+//  Created by Haven Barnes on 4/7/18.
+//  Copyright © 2018 au-sec. All rights reserved.
 //
 
 import UIKit
 
-class InitialViewController: UIViewController {
+class ViewController: UIViewController {
 
-    @IBOutlet weak var dashboardButton: UIButton!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        dashboardButton.isHidden = UIDevice.current.userInterfaceIdiom == .phone
+        // Do any additional setup after loading the view, typically from a nib.
     }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+
 }
+
