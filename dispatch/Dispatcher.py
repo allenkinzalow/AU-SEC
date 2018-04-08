@@ -39,10 +39,10 @@ class Dispatcher():
                 approval_status = status_response.content['approval_request']['status']
             else:
                 approval_status = "Response status fizzled..."
-                print resp.errors()
+                #print(resp.errors())
         else:
             approval_status = "Response wasn't valid..."
-            print response.errors()
+            #print(response.errors())
 
         return approval_status, auth_id
 
