@@ -4,18 +4,14 @@ from datetime import datetime
 from database import db_session, init_db
 from models import Authorizer_User
 import uuid
+from routes import routes
 
 app = Flask(__name__)
 app.config.from_object('config')
 
-app.config.update(dict(
-    TEMPLATES_AUTO_RELOAD=True
-))
-
 init_db()
 
-app.config.from_object(__name__)
-
+app.register_blueprint(routes)
 
 @app.errorhandler(404)
 def not_found(error):
@@ -29,4 +25,4 @@ def shutdown_session(exception=None):
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
 
-import routes
+
