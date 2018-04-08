@@ -126,14 +126,32 @@ def get_policies():
         policies = [policy.get_object() for policy in policies]
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
-#{data: {column_names: column_data}, table_name: table, row_id: id}
+#{data: {column_names: column_data}, table_name: table, data_id: id}
 @routes.route('/api/data/update', methods=['PUT'])
 def update_data():
-    
-    query_dict = {"command":"update","row_id":request.json["row_id"], "table_name":request.json["table_name"],
-                  "columns":request.json["data"].keys(),
-                  "values":list(request.json["data"].values())}
-    SQL_query,SQL_values = craftQuery(query_dict)    
+    if not check_json(request.json, 'data_id', 'data'):
+        abort(400, {'message': 'Essential json keys not found (data_id, data)'})
+    if not check_json(request.json, 'data_id'):
+        abort(400)
+    policy_bitwise = '000000'
+    policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    if policy:
+        policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
+    if int(str(policy_bitwise)[0]):
+        query_dict = {"command":"update","row_id":request.json["row_id"], "table_name":request.json["table_name"],
+                      "columns":request.json["data"].keys(),
+                      "values":list(request.json["data"].values())}
+        SQL_query,SQL_values = craftQuery(query_dict)    
+        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
+        db_session.add(pending_policy)
+        db_session.commit()
+
+        print("NEEDS AUTH")   
+        return make_response(jsonify({'status': 'pending'}))
+
+    if int(str(policy_bitwise)[1]):
+        print("NEED NOTIFY")
+
 
     return make_response(jsonify({'query': SQL_query, 'status': 'success'}))
 
@@ -217,8 +235,9 @@ def send_auth_request():
 
 @routes.route('/api/dispatch/receive', methods=['POST'])
 def get_auth_update():
-    if not check_json(request.json, insert_Relevant_Criteria_Here):
-        abort(400)
+    #if not check_json(request.json):
+    #    abort(400)
+    print(request.json)
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
     uuid = (request.json['approval_request'])['uuid']
     auth_result=(request.json['success'])
