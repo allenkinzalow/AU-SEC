@@ -42,12 +42,6 @@ body {
     color: white;
 }
 
-.modal-fixed-header {
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-    position: absolute;
-    top: 0;
-}
-
 .row-data-field .btn-key {
     display: none;
 }
@@ -58,7 +52,8 @@ body {
 
 /* MATERIALIZE OVERRIDES */
 nav .brand-logo {
-    margin-left: 10px;
+    margin-left: 20px;
+    font-size: 24px;
 }
 .col {
     margin-left: unset !important;
