@@ -1,6 +1,8 @@
 from app import app
 from flask import jsonify, request, render_template, jsonify, make_response, request, abort
 from models import Authorizer_User
+from dispatch.Dispatcher import Dispatcher
+
 
 def check_json(json, *params):
     if not json:
@@ -80,4 +82,12 @@ def delete_data():
 
 @app.route('/api/data/view_history', methods=[''])
 def view_data_history():    
+    return
+
+@app.route('/api/dispatch/send')
+def send_auth_reqiest():
+    return
+
+@app.route('/api/dispatch/receive')
+def get_auth_update():
     return

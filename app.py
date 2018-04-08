@@ -13,11 +13,9 @@ app.config.update(dict(
 ))
 
 init_db()
-u = Authorizer_User(1, 'lmao@gmail.com')
-db_session.add(u)
-db_session.commit()
 
 app.config.from_object(__name__)
+
 
 @app.errorhandler(404)
 def not_found(error):
