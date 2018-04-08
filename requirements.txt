@@ -3,6 +3,4 @@ flask-sqlalchemy
 pymysql
 gunicorn
 authy
-mysqldb
-mysqlclient
 mysql-connect-python
