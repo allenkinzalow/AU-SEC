@@ -2,7 +2,7 @@ from app import app
 from flask import jsonify, request, render_template, jsonify, make_response, request, abort
 from models import Authorizer_User
 from dispatch.Dispatcher import Dispatcher
-
+from crafter import craftQuery
 
 def check_json(json, *params):
     if not json:
@@ -55,30 +55,50 @@ def edit_policy():
         abort(400)
     return
 
-# {row_id: id, new_data: {column_name: column, ...}}
+# {row_id: id, table_name: table, new_data: {column_name: column, ...}}
 @app.route('/api/data/update', methods=['PUT'])
-def update_data():    
-    return
+def update_data():
+    
+    query_dict = {"row_id":request.json["row_id"], "table_name":request.json["table_name"],
+                  "columns":request.json["new_data"].keys(),
+                  "values":list(request.json["new_data"].values())}
+    SQL_query,SQL_values = craftQuery(query_dict)    
+    return 
 
-# {data: {table_name: "", column_name: "", }}
+# {row_id: id, table_name: table, data: {column_name: "", }}
 @app.route('/api/data/select', methods=['PUT'])
-def select_data():    
-    return
+def select_data():
+    if data in request.json:
+        query_dict = {"columns":request.json["data"].keys()
+    query_dict["table_name"] = request.json["table_name"]
+    query_dict["row_id"] = request.json["row_id"]
+    #the value returned here is a single item list containing the row_id
+    SQL_query,SQL_values = craftQuery(query_dict)
+    return SQL_query
 
-# {data: {column_names: column_data}, table_name: table, authorized_user: id}
+# {data: {column_names: column_data}, table_name: table, authorized_user: auth_id, row_id: id}
 @app.route('/api/data/insert', methods=['POST'])
 def insert_data():
     if not check_json(request.json, 'authorized_user', 'data'):
         abort(400)
-
-    return
+    columns = request.json["data"].keys()
+    values = list(request.json["data"].values())
+    query_dict = {"columns":columns,"values":values,
+                  "table_name":request.json["table_name"], 
+                  "row_id":request.json["row_id"],
+                  "auth_id":request.json["auth_id"]}
+    SQL_query,SQL_values = craftQuery(query_dict)
+    return SQL_query
 
 # {row_id: id, table_name: table}
 @app.route('/api/data/delete', methods=['PUT'])
 def delete_data():
     if not check_json(request.json, 'row_id'):
         abort(400)
-    return
+    query_dict = dict(request.json)
+    #the value returned here is a single item list containing the row_id
+    SQL_query,SQL_values = craftQuery(query_dict)
+    return SQL_query
 
 @app.route('/api/data/view_history', methods=[''])
 def view_data_history():    
