@@ -11,7 +11,7 @@ class Dispatcher():
 	self.config = json.load(open('config.json'))
 	self.authy_api = AuthyApiClient(self.config["api_key"])
 
-    def oneTouch_Auth(self, auth_id, user_id, message, seconds_to_expire, details):
+    def oneTouchAuth(self, auth_id, user_id, message, seconds_to_expire, details):
         """ Send a push authorization """
 
 	#Place backend data inside hidden_details dict
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     #Basic use demo
     pushBoy = Dispatcher()
-    resp, exp, a_id = pushBoy.oneTouch_Auth(args.aid, args.uid, args.message, args.expiration, args.details)
+    resp, exp, a_id = pushBoy.oneTouchAuth(args.aid, args.uid, args.message, args.expiration, args.details)
     tuple=pushBoy.getResponseStatus(resp,exp,a_id)
     print("Status: " + str(tuple[0]) + "\nAuthorization ID: " + str(tuple[1]))
 
