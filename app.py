@@ -20,11 +20,11 @@ def not_found(error):
 @app.errorhandler(400)
 def bad_request(error):
 	if 'message' in error.description:
-		response = jsonify({'error': 400, 'message': error.description['message']})
+		response = jsonify({'error': 400, 'message': error.description['message'], 'status': 'error'})
 	else:
 		response = jsonify({'error': 400, 'message': 'Bad request sent to the server'})
 	return make_response(response, 400)
-	
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()

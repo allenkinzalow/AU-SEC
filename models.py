@@ -13,8 +13,12 @@ class Patient(Base):
 	medicine = Column(String(64))
 	amount = Column(Integer)
 
-	def get_columns(self):
-		return ['data_id', 'name', ]
+	def __init__(self, name=None, auth_id=None, medicine=None, amount=None):
+		self.data_id = generate_uuid()
+		self.name = name
+		self.auth_id = auth_id
+		self.medicine = medicine
+		self.amount = amount
 
 
 class Authorizer_User(Base):
@@ -67,11 +71,18 @@ class Policy(Base):
 
 class Pending_Policy(Base):
 	__tablename__ = 'pending_policies'
-	id = Column(String(16), primary_key=True)
+	pending_id = Column(String(16), primary_key=True)
 	policy_id = Column(String(16))
 	command = Column(String(255))
 	expiration = Column(DateTime)
-	authGroupId = Column(String(16))
+	auth_group_id = Column(String(16))
+
+	def __init__(self, policy_id, command, expiration, auth_group_id):
+		self.pending_id = generate_uuid()
+		self.policy_id = policy_id
+		self.command = command
+		self.expiration = expiration
+		self.auth_group_id = auth_group_id
 
 class Group(Base):
 	__tablename__ = 'groups'

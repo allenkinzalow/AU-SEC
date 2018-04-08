@@ -125,7 +125,7 @@ def get_policies():
         policies = [policy.get_object() for policy in policies]
     return make_response(jsonify({'policies': policies}))
 
-#{data: {column_names: column_data}, table_name: table, authorized_user: auth_id, row_id: id}
+#{data: {column_names: column_data}, table_name: table, row_id: id}
 @routes.route('/api/data/update', methods=['PUT'])
 def update_data():
     
@@ -133,7 +133,8 @@ def update_data():
                   "columns":request.json["data"].keys(),
                   "values":list(request.json["data"].values())}
     SQL_query,SQL_values = craftQuery(query_dict)    
-    return SQL_query
+
+    return make_response(jsonify({'query': SQL_query, 'status': 'success'}))
 
 # {row_id: id, table_name: table, data: {column_name: "", }}
 @routes.route('/api/data/select', methods=['PUT'])
@@ -148,19 +149,15 @@ def select_data():
     return SQL_query
 
 
-# {data: {column_names: column_data}, table_name: table, authorized_user: auth_id, row_id: id}
+# {data: {column_names: column_data}, table_name: table, auth_id: auth_id}
 @routes.route('/api/data/insert', methods=['POST'])
 def insert_data():
-    if not check_json(request.json, 'authorized_user', 'data'):
+    if not check_json(request.json, 'auth_id', 'data'):
         abort(400)
-    columns = request.json["data"].keys()
-    values = list(request.json["data"].values())
-    query_dict = {"command":"insert","columns":columns,"values":values,
-                  "table_name":request.json["table_name"], 
-                  "row_id":request.json["row_id"],
-                  "authorized_user":request.json["authorized_user"]}
-    SQL_query,SQL_values = craftQuery(query_dict)
-    return SQL_query
+    patient = Patient(request.json['data']['name'], request.json['auth_id'], request.json['data']['medicine'], request.json['data']['amount'])
+    db_session.add(patient)
+    db_session.commit()
+    return make_response(jsonify({'data_id': patient.data_id, 'auth_id': patient.auth_id, 'status': 'success'}))
 
 # {row_id: id, table_name: table}
 @routes.route('/api/data/delete', methods=['PUT'])

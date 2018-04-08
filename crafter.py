@@ -30,9 +30,7 @@ def craftQuery(dataDict):
              if c < len(column_names) - 1:
                  query+= ", "
          query += " WHERE id=%s"""
-         print (query)
          values.append(row_ID)
-         print (values)
          return query,values
     elif command == "select":
          query = "SELECT "
@@ -44,8 +42,6 @@ def craftQuery(dataDict):
                  if c < len(column_names) - 1:
                      query += ", "
          query += " FROM " + table_name + " WHERE id = %s"
-         print (query)
-         print (row_ID)
          return query,[row_ID]
     elif command == "insert":
          auth_ID = dataDict["authorized_user"] 
@@ -66,12 +62,9 @@ def craftQuery(dataDict):
          query+=")"
          values.insert(0,auth_ID)
          values.insert(0,row_ID)
-         print (query)
-         print (values)
          return query,values           
     elif command == "delete":
         query += "DELETE FROM " + table_name + " WHERE id = %s"
-        print (query)
         return query,[row_ID]
     else:
         return "INVALID COMMAND"
