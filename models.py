@@ -5,7 +5,6 @@ from uuid import uuid4
 def generate_uuid():
     return str(uuid4())[:16]
 
-
 class Patient(Base):
 	__tablename__ = 'patients'
 	data_id = Column(String(16), primary_key=True)

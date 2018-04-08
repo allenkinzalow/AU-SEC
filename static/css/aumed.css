@@ -42,9 +42,9 @@ body {
     color: white;
 }
 
-.row-data-field .btn-key {
+/* .row-data-field .btn-key {
     display: none;
-}
+} */
 
 .row-data-field:hover .btn-key {
     display: inline-block;
