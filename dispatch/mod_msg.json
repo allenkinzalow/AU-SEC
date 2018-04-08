@@ -1,0 +1,11 @@
+{
+	"auth_id" : "12345678",
+	"user_id" : 42714500,
+	"message" : "Send More Memes Stat",
+	"expiration_time" : 30,
+	"details" : {
+			"Doctor" : "Dr.DickButt",
+			"Medicine" : "The Dankest Dank",
+			"Dosage" : "What am I, the cops?"
+		    }
+}
