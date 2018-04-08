@@ -23,7 +23,7 @@ body {
 .authorization-actions * {
     margin: 0px 5px;
 }
-#auth_perscription_med, #auth_original, #auth_new {
+#auth_prescription_med, #auth_original, #auth_new {
     font-weight: bold;
 }
 .cd-timeline__content h2 {
@@ -89,4 +89,8 @@ textarea.materialize-textarea:focus:not([readonly]) {
 }
 .select-wrapper input.select-dropdown:focus {
     border-bottom: 1px solid #2196F3 !important;
+}
+
+.blue {
+    background-color: #03244d !important;
 }

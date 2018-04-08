@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="http://www.auburn.edu/template/images/favicon.ico">
+
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -28,6 +30,7 @@
             <a href="#!">Switch Account</a>
         </li>
     </ul>
+
     <div class="navbar-fixed">
         <nav>
             <div class="nav-wrapper blue">
@@ -46,6 +49,7 @@
             </div>
         </nav>
     </div>
+
     <div id="content_area">
         <div class="row content-area" id="patients_card" style="display: none">
             <div class="col s8">
@@ -106,29 +110,28 @@
         <div class="collapsible-body">
             <div class="row row-data-field">
                 <div class="input-field col s5">
-                    <select id="perscription_med">
-                        <option value="" disabled selected>Choose the perscription medicine</option>
+                    <select id="prescription_med">
+                        <option value="" disabled selected>Choose the prescription medicine</option>
                         <option value="1">Option 1</option>
                         <option value="2">Option 2</option>
                         <option value="3">Option 3</option>
                     </select>
                     <label>Medicine</label>
                 </div>
-                <div class="input-field col s1">
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped modal-trigger btn-key" 
+                <div class="input-field col s1" id="#medicineDataPolicyButton">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key" 
                     data-position="top" 
                     data-tooltip="Data Policies"
-                    href="#dataPolicyModal"
                     id="#medicineDataPolicyButton">
-                        <i class="tiny material-icons" href="#dataPolicyModal">vpn_key</i>
+                        <i class="tiny material-icons">vpn_key</i>
                     </a>
                 </div>
                 <div class="input-field col s5">
-                    <input id="perscription_amount" type="text" class="validate">
-                    <label for="perscription_amount">Amount</label>
+                    <input id="prescription_amount" type="text" class="validate">
+                    <label for="prescription_amount">Amount</label>
                 </div>
                 <div class="input-field col s1">
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped modal-trigger btn-key" 
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key" 
                     data-position="top" 
                     data-tooltip="Data Policies"
                     href="#dataPolicyModal"
@@ -170,8 +173,8 @@
         <div class="collapsible-header">%name%</div>
         <div class="collapsible-body">
             <div class="authorization-subtitle">
-                A change has been made to %name%'s perscription for
-                <span id="auth_perscription_med">%medical_prescription%</span>
+                A change has been made to %name%'s prescription for
+                <span id="auth_prescription_med">%medical_prescription%</span>
                 from
                 <span id="auth_original">%medical_old_value%</span>
                 to
