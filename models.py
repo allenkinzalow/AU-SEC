@@ -13,6 +13,9 @@ class Patient(Base):
 	medicine = Column(String(64))
 	amount = Column(Integer)
 
+	def get_columns(self):
+		return ['data_id', 'name', ]
+
 
 class Authorizer_User(Base):
 	__tablename__ = 'auth_users'
@@ -39,10 +42,10 @@ class Policy(Base):
 	expiration = Column(DateTime())
 	policy_bitwise = Column(Integer)
 
-	def __init__(self, data_id=None, authorizers=None, column_name=None, table_name=None, expiration=None, policy_bitwise=None):
+	def __init__(self, data_id=None, authorizers=None, group_id=None, column_name=None, table_name=None, expiration=None, policy_bitwise=None):
 		self.policy_id = generate_uuid()
 		self.data_id = data_id
-		self.group_id = generate_uuid()
+		self.group_id = group_id
 		self.column_name = column_name
 		self.table_name = table_name
 		self.expiration = expiration
@@ -50,6 +53,17 @@ class Policy(Base):
 
 	def __repr__(self):
 		return '<Policy %r>: %r | %r' % self.policy_id, self.data_id, self.policy_bitwise
+
+	def get_object(self):
+		return {
+			'policy_id': self.policy_id,
+			'data_id': self.data_id,
+			'group_id': self.group_id,
+			'column_name': self.column_name,
+			'table_name': self.table_name,
+			'expiration': self.expiration,
+			'policy_bitwise': self.policy_bitwise
+		}
 
 class Pending_Policy(Base):
 	__tablename__ = 'pending_policies'
