@@ -1,4 +1,4 @@
-import json, time
+import json
 from authy.api import AuthyApiClient
 
 class Dispatcher():
