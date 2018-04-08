@@ -3,6 +3,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
+TEMPLATES_AUTO_RELOAD=True
 
 #mysql info
 SQLALCHEMY_DATABASE_URI="mysql+pymysql://d2944o7xg2ywt9sq:w27ml3710spjztt6@tkck4yllxdrw0bhi.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/oajshe5hvvevfulh"
