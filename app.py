@@ -4,14 +4,12 @@ from datetime import datetime
 from database import db_session, init_db
 from models import Authorizer_User
 import uuid
+from dispatch.Dispatcher import Dispatcher
 
 app = Flask(__name__)
 app.config.from_object('config')
 
 init_db()
-u = Authorizer_User(1, 'lmao@gmail.com')
-db_session.add(u)
-db_session.commit()
 
 def check_json(json, *params):
     if not json:
@@ -37,15 +35,10 @@ def index():
 def create_user():
     if not check_json(request.json, 'preferred_comms', 'contact_info'):
         abort(400)
-    user = {
-        'id': generate_uuid(),
-        'preferred_comms': request.json['preferred_comms'],
-        'contact_info': request.json['contact_info']
-    }
-
-    # Database stuff here
-
-    return make_response(jsonify({"id": user['id']}), 200)
+    user = Authorizer_User(request.json['preferred_comms'], request.json['contact_info'])
+    db_session.add(user)
+    db_session.commit()
+    return make_response(jsonify({"id": user.auth_id}), 200)
 
 # {user_id: id, preferred_comms: <integer>{1,2,3}, contact_info: <string>}
 @app.route('/api/auth_users/edit_user', methods=['PUT'])
@@ -98,6 +91,14 @@ def delete_data():
 
 @app.route('/api/data/view_history', methods=[''])
 def view_data_history():    
+    return
+
+@app.route('/api/dispatch/send')
+def send_auth_reqiest():
+    return
+
+@app.route('/api/dispatch/receive')
+def get_auth_update():
     return
 
 @app.errorhandler(404)
