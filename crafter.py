@@ -1,17 +1,20 @@
 from flask import Flask
 import mysql.connector
-
+from config import DEFAULT_DATA_TABLE
 
 #craftQuery(dictionary)
 #{"command":('update','select','insert','delete')
 # "table_name":"table_name" 
-# "row_id":"6bd87ed4-3add-11"
+# "data_id":"6bd87ed4-3add-11"
 # "columns":["name","medicine"]
 # "values":["jeff","DrugEx"]} -- Required for 'update','insert' only
 def craftQuery(dataDict):
     command = dataDict["command"]
-    table_name = dataDict["table_name"]
-    row_ID = dataDict["row_id"]
+    if not 'table_name' in dataDict:
+        table_name = DEFAULT_DATA_TABLE
+    else:
+        table_name = dataDict["table_name"]
+    row_ID = dataDict["data_id"]
     if "columns" in dataDict:
     	column_names = dataDict["columns"]
     else:
@@ -64,11 +67,11 @@ def craftQuery(dataDict):
          values.insert(0,row_ID)
          return query,values           
     elif command == "delete":
-        query += "DELETE FROM " + table_name + " WHERE id = %s"
+        query += "DELETE FROM " + table_name + " WHERE id = " + row_ID
         return query,[row_ID]
     else:
         return "INVALID COMMAND"
 
 if __name__ == "__main__":
-    request = {"command":"delete","table":"patients","id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"]}
-    craftQuery(request)
+    request = {"command":"delete","table":"patients","data_id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"], "table_name": "patients"}
+    print(craftQuery(request))
