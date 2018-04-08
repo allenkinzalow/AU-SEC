@@ -1,16 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from datetime import datetime
 app = Flask(__name__)
 
+# Override default configurations in flask.
+app.config.update(dict(
+    TEMPLATES_AUTO_RELOAD=True
+))
+
 @app.route('/')
 def index():
-    the_time = datetime.now().strftime("%A, %d %b %Y %l:%M %p")
-
-    return """
-    <h1>Hi Guys</h1>
-    <p>It is currently {time}.</p>
-    <img src="http://loremflickr.com/600/400" />
-    """.format(time=the_time)
+    return render_template('index.html')
 
 @app.route('/patients')
 def patients():
