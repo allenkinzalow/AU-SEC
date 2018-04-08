@@ -32,14 +32,14 @@ class Dispatcher():
 
         ##Verify valid response
         if response.ok():
-                uuid = response.get_uuid()
+            uuid = response.get_uuid()
             status_response = self.authy_api.one_touch.get_approval_status(uuid)
-                if status_response.ok():
-                    # one of 'pending', 'approved', 'denied', or 'expired'
-                    approval_status = status_response.content['approval_request']['status']
+            if status_response.ok():
+                # one of 'pending', 'approved', 'denied', or 'expired'
+                approval_status = status_response.content['approval_request']['status']
             else:
                 approval_status = "Response status fizzled..."
-                    print resp.errors()
+                print resp.errors()
         else:
             approval_status = "Response wasn't valid..."
             print response.errors()
