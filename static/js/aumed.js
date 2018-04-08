@@ -1,13 +1,27 @@
 
 AUMed = {
     load: function() {
+        AUMed.UI.nav.setup();
         AUMed.UI.patients.open();
-        AUMed.UI.timeline.open();
+        //AUMed.UI.timeline.open();
     },
     loadColumnPoliciesForUser: function(auth_id, columnName) {
         AUMed.UI.policies.populate(auth_id, columnName);
     },
     UI: {
+        nav: {
+            setup: function() {
+                if (AUMed.Util.isDoctor()) {
+                    $('#user-label').html('Doctor View');
+                } else {
+                    $('#user-label').html('Patient View');
+                }
+                
+                $(document).on('click', '#switch_account', function () {
+                    AUMed.Util.toggleUserType();
+                });
+            }
+        },
         patients: {
             _patients: [],
             populate: function() {
@@ -24,17 +38,19 @@ AUMed = {
                     }, "")
                 );
 
-                M.AutoInit();
-                $(document).on('click', '#medicineDataPolicyButton', function () {
+                $(document).on('click', '.btn-medicine-policy', function () {
                     console.log('clicked medicine..');
                     columnName = 'medicine'
                     AUMed.loadColumnPoliciesForUser(auth_id, columnName)
                 });
-                $(document).on('click', '#amountDataPolicyButton', function () {
+
+                $(document).on('click', '.btn-amount-policy', function () {
                     console.log('clicked amount..');
                     columnName = 'amount'
                     AUMed.loadColumnPoliciesForUser(auth_id, columnName)
                 });
+                M.AutoInit();
+                
             },
             open: function() {
                 $('#patients_card').show();
@@ -112,12 +128,12 @@ AUMed = {
         },
         authorizations: {},
         timeline: {},
-
     },
 };
 
 $(document).ready(() => {
     M.AutoInit();
     AUMed.load();
+
 });
 

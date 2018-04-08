@@ -24,4 +24,16 @@ AUMed.Util = {
             },
         });
     },
+    isDoctor: function() {
+        return localStorage.getItem("user_type") == "doctor"
+    },
+    toggleUserType: function() {
+        if (localStorage.getItem('user_type') == "doctor") {
+            localStorage.setItem('user_type', "patient");
+            
+        } else {
+            localStorage.setItem('user_type', "doctor");
+        }
+        location.reload();
+    }
 };

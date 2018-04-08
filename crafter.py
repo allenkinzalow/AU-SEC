@@ -1,6 +1,5 @@
 from flask import Flask
-import mysql.connector
-
+import pymysql
 
 #craftQuery(dictionary)
 #{"command":('update','select','insert','delete')

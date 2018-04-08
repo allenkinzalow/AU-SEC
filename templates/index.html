@@ -27,7 +27,7 @@
 <body>
     <ul id="settings_dropdown" class="dropdown-content">
         <li>
-            <a href="#!">Switch Account</a>
+            <a id="switch_account">Switch Account</a>
         </li>
     </ul>
 
@@ -43,7 +43,9 @@
                         <a href="/#timelog">Timelog</a>
                     </li>
                     <li>
-                        <a class="dropdown-trigger" href="#!" data-target="settings_dropdown" data-beloworigin="true">Allen Kinzalow<i class="material-icons right">arrow_drop_down</i></a>
+                        <a id="user-label" class="dropdown-trigger" data-target="settings_dropdown" data-beloworigin="true">Patient
+                            <i class="material-icons right">arrow_drop_down</i>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -95,16 +97,16 @@
                 </div>
             </div>
         </div>
-        
+
         <section class="cd-timeline js-cd-timeline" id="timeline_section" style="display: none">
             <div class="cd-timeline__container" id="timeline_table">
-                
+
             </div>
         </section>
     </div>
 
-<!-- Re-usable scripts. -->
-<script type="text/html" id="patient_entry_template">
+    <!-- Re-usable scripts. -->
+    <script type="text/html" id="patient_entry_template">
     <li data-id="%id%">
         <div class="collapsible-header">%name%</div>
         <div class="collapsible-body">
@@ -118,26 +120,25 @@
                     </select>
                     <label>Medicine</label>
                 </div>
-                <div class="input-field col s1" id="#medicineDataPolicyButton">
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key" 
+                <div class="input-field col s1">
+                    <div class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key" 
                     data-position="top" 
                     data-tooltip="Data Policies"
-                    id="#medicineDataPolicyButton">
+                    class="btn-medicine-policy">
                         <i class="tiny material-icons">vpn_key</i>
-                    </a>
+                    </div>
                 </div>
                 <div class="input-field col s5">
-                    <input id="prescription_amount" type="text" class="validate">
+                    <input class="prescription_amount" type="text" class="validate">
                     <label for="prescription_amount">Amount</label>
                 </div>
                 <div class="input-field col s1">
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key" 
+                    <div class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key" 
                     data-position="top" 
                     data-tooltip="Data Policies"
-                    href="#dataPolicyModal"
-                    id="#amountDataPolicyButton">
+                    class="btn-amount-policy">
                         <i class="tiny material-icons">vpn_key</i>
-                    </a>
+                    </div>
                 </div>
             </div>
             <a class="waves-effect waves-light btn blue">Save</a>
@@ -145,7 +146,7 @@
     </li>
 </script>
 
-<script type="text/html" id="policy_entry_template">
+    <script type="text/html" id="policy_entry_template">
     <li>
         <div class="collapsible-header">%name%</div>
         <div class="collapsible-body">
@@ -168,7 +169,7 @@
     </li>
 </script>
 
-<script type="text/html" id="authorization_entry_template">
+    <script type="text/html" id="authorization_entry_template">
     <li data-patient="%patient_id%" data-id="%authorization_id%">
         <div class="collapsible-header">%name%</div>
         <div class="collapsible-body">
@@ -189,7 +190,7 @@
     </li>
 </script>
 
-<script type="text/html" id="timeline_entry_template">
+    <script type="text/html" id="timeline_entry_template">
     <div class="cd-timeline__block js-cd-block" data-id="%id%">
         <div class="cd-timeline__img cd-timeline__img--%color% js-cd-img">
                 <i class="material-icons">%icon%</i>
@@ -203,44 +204,38 @@
     </div>
 </script>
 
-<!-- Modals & Dropdowns -->
-<div id="dataPolicyModal" class="modal modal-fixed-footer">
-    <div class="modal-content">
-        <h4 id="dataPolicyModalHeader" class="left">Data Policies</h4>
-        <a id="addPolicyButton" class="waves-effect waves-light btn blue right">Add Policy</a>
-        <ul id="policies_table"></ul>
+    <!-- Modals & Dropdowns -->
+    <div id="dataPolicyModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 id="dataPolicyModalHeader" class="left">Data Policies</h4>
+            <a id="addPolicyButton" class="waves-effect waves-light btn blue right">Add Policy</a>
+            <ul id="policies_table"></ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat ">Done</a>
+        </div>
     </div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat ">Done</a>
-    </div>
-</div>
 
-<div id="addPatientModal" class="modal">
+    <div id="addPatientModal" class="modal">
         <div class="modal-content">
             <h4>Add Patient</h4>
             <div class="row">
                 <form class="col s12">
                     <div class="row">
-                    <div class="input-field col s6">
-                        <input id="first_name" type="text" class="validate">
-                        <label for="first_name">First Name</label>
-                    </div>
-                    <div class="input-field col s6">
-                        <input id="last_name" type="text" class="validate">
-                        <label for="last_name">Last Name</label>
-                    </div>
-                    </div>
-                    <div class="row">
-                    <div class="input-field col s12">
-                        <input id="password" type="password" class="validate">
-                        <label for="password">Password</label>
-                    </div>
+                        <div class="input-field col s6">
+                            <input id="first_name" type="text" class="validate">
+                            <label for="first_name">First Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="last_name" type="text" class="validate">
+                            <label for="last_name">Last Name</label>
+                        </div>
                     </div>
                     <div class="row">
-                    <div class="input-field col s12">
-                        <input id="email" type="email" class="validate">
-                        <label for="email">Email</label>
-                    </div>
+                        <div class="input-field col s12">
+                            <input id="authy" type="text" class="validate">
+                            <label for="authy">Authy ID</label>
+                        </div>
                     </div>
                 </form>
             </div>
