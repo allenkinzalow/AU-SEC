@@ -12,7 +12,7 @@ class Dispatcher():
 	self.authy_api = AuthyApiClient(self.config["api_key"])
 
     def oneTouch_Auth(self, auth_id, user_id, message, seconds_to_expire, details):
-        """ Send push authorization based on data inside mod_msg dict """
+        """ Send a push authorization """
 
 	#Place backend data inside hidden_details dict
 	hidden_details={}
@@ -28,7 +28,7 @@ class Dispatcher():
 	return response, seconds_to_expire, auth_id
 
     def getResponseStatus(self, response, seconds_to_expire, auth_id):
-        """ Very valid response and use response uuid to find and return the push authorization result """
+        """ Verify valid response and use response uuid to find and return the push authorization result """
 
 	##Verify valid response
 	if response.ok():
@@ -44,10 +44,11 @@ class Dispatcher():
         			if((approval_status=="approved") | (approval_status=="denied")):
 					break
 			else:
-				approval_status = "Error"
+				approval_status = "Response status fizzled..."
         			print resp.errors()
+				break
 	else:
-		approval_status = "Error"
+		approval_status = "Response wasn't valid..."
 		print response.errors()
 
 	return approval_status, auth_id
