@@ -29,15 +29,6 @@ class Patient(Base):
 			'amount': self.amount
 		}
 
-	def to_json(self):
-		return {
-			'data_id': self.data_id,
-			'name': self.name,
-			'auth_id': self.auth_id,
-			'medicine': self.medicine,
-			'amount': self.amount,
-		}
-
 
 class Authorizer_User(Base):
 	__tablename__ = 'auth_users'
@@ -112,6 +103,7 @@ class Pending_Policy(Base):
 		self.expiration = expiration
 		self.auth_group_id = auth_group_id
 
+
 class Group(Base):
 	__tablename__ = 'groups'
 	group_id = Column(String(16), primary_key=True)
@@ -155,7 +147,7 @@ class History(Base):
 		self.table_name = table
 		self.auth_id = auth_id
 
-	def to_json(self):
+	def to_object(self):
 		return {
 			"data_id": self.data_id,
 			"operation": self.operation,
