@@ -25,19 +25,13 @@ AUMed.Schema = {
 
         this.create = function(data) {
             AUMed.Util.api({
-                url: 'policies/get_policies',
+                url: 'policies/create_policy',
                 type: 'POST',
                 data: {
-                    'column_names': [column_name],
-                    'auth_ids': [auth_id]
+                    data
                 },
                 callback: (data) => { 
-                    allPolicies = data['policies'];
-                    (allPolicies || []).forEach(p => {
-                        console.log(p);
-                        self._policies.push(new AUMed.Schema.Policy(p));
-                    });
-                    self.populate(column_name);
+                    return data;
                 }
             });
         };

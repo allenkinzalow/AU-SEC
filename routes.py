@@ -73,6 +73,7 @@ def create_auth_group(authorizers):
 def create_policy():
 
     policy_ids, group_ids = [], []
+    policies = []
 
     if not check_json(request.json, 'data_id', 'authorizers', 'policy_bitwise'):
         abort(400, {'message': 'Essential json keys not found (data_id, authorizers, policy_bitwise)'})
@@ -94,17 +95,23 @@ def create_policy():
         group_id = create_auth_group(request.json['authorizers'])
         for col in Patient.__table__.columns.keys():
             policy = Policy(request.json['data_id'], request.json['authorizers'], group_id, col, request.json['table_name'], request.json['expiration'], request.json['policy_bitwise'])
+            policies.append(policy)
             db_session.add(policy)
             policy_ids.append(policy.policy_id)
 
-    group_members = []
-    for auth_id in request.json['authorizers']:
-        auth_user = Authorizer_User.query.get(auth_id)
-        if auth_user:
-            group_members.append(auth_user.get_object())
+    policies = [policy.get_object() for policy in policies]
+    for policy in policies:
+        groups = Group.query.filter(Group.group_id == policy['group_id']).all()
+        auth_ids = [group.auth_id for group in groups]
+        group_members = []
+        for auth_id in request.json['authorizers']:
+            auth_user = Authorizer_User.query.filter(Authorizer_User.auth_id == auth_id).first()
+            if auth_user:
+                group_members.append(auth_user.get_object())
+        policy['group_members'] = group_members
 
     db_session.commit()
-    return make_response(jsonify({'policy_ids': policy_ids, 'group_id': group_id, 'group_members': group_members, 'status': 'success'}), 200)
+    return make_response(jsonify({'policies': policies, 'status': 'success'}), 200)
 
 # {policy_ids: [id1, id2, ...], authorizers: [id1, id2, ...], column_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
 @routes.route('/api/policies/edit_policy', methods=['POST'])
@@ -223,7 +230,7 @@ def select_data():
     if policy:
         policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
     if int(str(policy_bitwise)[4]):
-        query_dict = {"command":"select"}
+        query_dict = {}
         if "data" in request.json:
             query_dict = {"columns":request.json["data"].keys()}
         if not 'table_name' in request.json:
@@ -234,6 +241,7 @@ def select_data():
         else:
             query_dict['data_id'] = '*'
         #the value returned here is a single item list containing the data_id
+        query_dict['command'] = 'select'
         SQL_query = craftQuery(query_dict)
         
         create_pending_policy(policy.policy_id, SQL_query, policy.expiration)

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/libraries/timeline.css') }}?v=1.0">
-    <link preload rel="stylesheet" href="{{ url_for('static', filename='css/aumed.css') }}?v=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aumed.css') }}?v=1.0">
 
     <!-- Javascript -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -108,40 +108,38 @@
         <div class="collapsible-body">
             <div class="row row-data-field">
                 <div class="input-field col s5">
+<<<<<<< HEAD
                     <select id="medicine_type_%auth_id%" class="medicine_type">
                         <option value="" disabled>Choose the prescription medicine</option>
                         <option value="Amoxicillin">Amoxicillin</option>
                         <option value="Benadryl">Benadryl</option>
                         <option value="Concerta">Concerta</option>
+=======
+                    <select id="prescription_med">
+                        <option value="" disabled selected>Choose the prescription medicine</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+>>>>>>> e24d692f491571c807366b6ff99d928bbf0181b9
                     </select>
                     <label>Medicine</label>
                 </div>
-                <div class="col s1 policy-actions">
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-policy btn-medicine-policy" 
-                    data-position="right" 
+                <div class="input-field col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key btn-medicine-policy" 
+                    data-position="top" 
                     data-tooltip="Data Policies">
                         <i class="tiny material-icons">vpn_key</i>
-                    </a>
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-policy btn-timeline-policy" 
-                    data-position="right" 
-                    data-tooltip="Timeline">
-                        <i class="tiny material-icons">timeline</i>
                     </a>
                 </div>
                 <div class="input-field col s5">
-                    <input id="medicine_amount_%auth_id%" class="prescription_amount" type="text" class="validate" value="%amount%">
-                    <label id="medicine_amount_label_%auth_id%" for="prescription_amount">Amount</label>
+                    <input class="prescription_amount" type="text" class="validate">
+                    <label for="prescription_amount">Amount</label>
                 </div>
-                <div class="col s1 policy-actions">
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-policy btn-amount-policy" 
-                    data-position="left" 
+                <div class="input-field col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key btn-amount-policy" 
+                    data-position="top" 
                     data-tooltip="Data Policies">
                         <i class="tiny material-icons">vpn_key</i>
-                    </a>
-                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-policy btn-timeline-policy" 
-                    data-position="left" 
-                    data-tooltip="Timeline">
-                        <i class="tiny material-icons">timeline</i>
                     </a>
                 </div>
             </div>
@@ -151,24 +149,22 @@
     </script>
 
     <script type="text/html" id="policy_entry_template">
-    <li data-id="%id%">
+    <li>
         <br/>
         <div class="row row-data-field">
             <div class="input-field col s5">
                 <select id="policy_type_%id%">
-                    <optgroup disabled label="Choose a data policy type">
-                        <option value="1">Notify</option>
-                        <option value="2">Verify</option>
-                    </optgroup>
+                    <option value="" disabled selected>Choose a data policy type</option>
+                    <option value="1" >Notify</option>
+                    <option value="2">Verify</option>
                 </select>
                 <label>Policy Type</label>
             </div>
-            <div class="col s5">
-                <!--<input id="authy_id" type="text" class="validate" value="%auth_id%">
-                <label for="authy_id">Authy ID</label>-->
-                <div id="authy_id_%id%" class="chips chips-autocomplete"></div>
+            <div class="input-field col s5">
+                <input id="authy_id" type="text" class="validate" value="%auth_id%">
+                <label for="authy_id">Authy ID</label>
             </div>
-        <a class="input-field waves-effect waves-light btn-small red col s2 btn-delete-policy">Remove</a>
+        <a class="btn-delete-policy" class="input-field waves-effect waves-light btn-small red col s2">Remove</a>
     </li>
     </script>
 

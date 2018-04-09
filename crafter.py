@@ -49,10 +49,10 @@ def craftQuery(dataDict):
                  query += item
                  if c < len(column_names) - 1:
                      query += ", "
-         query += " FROM " + table_name + " WHERE id = " + row_ID
+         query += " FROM " + table_name + " WHERE data_id = \"" + row_ID + "\""
          return query         
     elif command == "delete":
-        query += "DELETE FROM " + table_name + " WHERE id = " + row_ID
+        query += "DELETE FROM " + table_name + " WHERE data_id = \"" + row_ID + "\""
         return query
     else:
         return "INVALID COMMAND"
