@@ -52,6 +52,7 @@ AUMed.Schema = {
         this.new_value = data.new_value;
         this.field = data.column;
         this.auth_id = data.auth_id;
+        this.table = data.table;
 
         this.revert = function() {};
     },

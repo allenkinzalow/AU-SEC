@@ -132,13 +132,13 @@ AUMed = {
             populate: function() {
                 var html = this._history.reduce(function(str, item) {
                     var action = item.operation == "INSERT" ? "Created" : "Updated";
-                    var capitalField = AUMed.Util.capitalize(item.field);
+                    var capitalField = AUMed.Util.capitalize(item.table);
                     return str +  AUMed.Util.template($('#timeline_entry_template').html(), {
                         id: item.data_id,
                         color: "green",
                         icon: item.operation == "INSERT" ? "add" : "lock",
                         title: capitalField + " " + action,
-                        action: item.operation == "INSERT" ? action + " inserted with a value of " + item.new_value : action + " was changed from " + item.old_value + " to " + item.new_value,
+                        action: item.operation == "INSERT" ? AUMed.Util.capitalize(item.table) + " inserted with a value of " + item.new_value : AUMed.Util.capitalize(item.table) + " was changed from " + item.old_value + " to " + item.new_value,
                         date: AUMed.Util.getFormattedDate(new Date(item.time_stamp))
                     });
                 }, "");
