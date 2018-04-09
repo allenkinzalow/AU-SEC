@@ -166,20 +166,25 @@ def update_data():
 
     return make_response(jsonify({'query': SQL_query, 'status': 'success'}))
 
-# {row_id: id, table_name: table, data: {column_name: "", }}
-@routes.route('/api/data/select', methods=['PUT'])
+# {data_id: id, table_name: table, data: {column_name: "", }}
+@routes.route('/api/data/select', methods=['POST'])
 def select_data():
-    query_dict = {"command":"select"}
     policy_bitwise = '000000'
-    policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    policy = None
+    if 'data_id' in request.json:
+        policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
     if policy:
         policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
     if int(str(policy_bitwise)[4]):
+        query_dict = {"command":"select"}
         if "data" in request.json:
             query_dict = {"columns":request.json["data"].keys()}
         query_dict["table_name"] = request.json["table_name"]
-        query_dict["row_id"] = request.json["row_id"]
-        #the value returned here is a single item list containing the row_id
+        if 'data_id' in request.json:
+            query_dict["data_id"] = request.json["data_id"]
+        else:
+            query_dict['data_id'] = '*'
+        #the value returned here is a single item list containing the data_id
         SQL_query = craftQuery(query_dict)
         
         pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
@@ -190,6 +195,27 @@ def select_data():
     
     if int(str(policy_bitwise)[5]):
         print("NEED NOTIFY")
+
+    if 'data_id' in request.json:
+        patient = Patient.query.get(request.json['data_id'])
+        data = {}
+        if 'data' in request.json:
+            for key in patient.get_object().keys():
+                if key in request.json['data']:
+                    data[key] = patient.get_objects[key]
+        else:
+            data = patient.get_object()
+        return make_response(jsonify({'status': 'success', 'patients': [data]}))
+    patients = Patient.query.all()
+    if 'data' in request.json:
+        if 'medicine' in request.json['data']:
+            patients = [patient for patient in patients if patient.medicine == request.json['data']['medicine']]
+        if 'amount' in request.json['data']:
+            patients = [patient for patient in patients if patient.amount == request.json['data']['amount']]
+        if 'name' in request.json['data']:
+            patients = [patient for patient in patients if patient.name == request.json['data']['name']]
+    patients = [patient.get_object() for patient in patients]
+    return make_response(jsonify({'status': 'success', 'patients': patients}))
 
 
 # {data: {column_names: column_data}, table_name: table, auth_id: auth_id}
@@ -217,7 +243,7 @@ def delete_data():
         # Build query to keep in table
         query_dict = dict(request.json)
         query_dict["command"] = "delete"
-        # the value returned here is a single item list containing the row_id
+        # the value returned here is a single item list containing the data_id
         SQL_query,SQL_values = craftQuery(query_dict)
         pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
         db_session.add(pending_policy)

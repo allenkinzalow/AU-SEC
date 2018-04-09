@@ -20,6 +20,15 @@ class Patient(Base):
 		self.medicine = medicine
 		self.amount = amount
 
+	def get_object(self):
+		return {
+			'data_id': self.data_id,
+			'name': self.name,
+			'auth_id': self.auth_id,
+			'medicine': self.medicine,
+			'amount': self.amount
+		}
+
 
 class Authorizer_User(Base):
 	__tablename__ = 'auth_users'
@@ -95,7 +104,7 @@ class Group(Base):
 		self.auth_id = auth_id
 		self.group_id = group_id
 
-class Pending_Auths(Base):
+class Pending_Auth(Base):
 	__tablename__ = 'pending_auths'
 	group_id = Column(String(16), primary_key=True)
 	auth_id = Column(String(16))
