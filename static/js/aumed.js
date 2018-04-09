@@ -72,6 +72,30 @@ AUMed = {
                     AUMed.UI.timeline.open(id);
                 });
 
+                $(document).on('click', '.save-patient', function() {
+                    var parent = $(this).parents("li").first();
+                    var data_id = parent.data("id");
+                    var medicine = parent.find('.medicine_type').val();
+                    var amount = parent.find('.prescription_amount').val();
+                    AUMed.Util.api({
+                        url: 'data/update',
+                        type: 'POST',
+                        data: {
+                            "data_id": data_id,
+                            "data": {
+                                "medicine": medicine,
+                                "amount": amount,
+                            },
+                        },
+                        callback: (data) => { 
+                            if(data.status && data.status == "pending")
+                                M.toast({html: 'Authorization for change submitted!'})
+                            else
+                                M.toast({html: 'Successfully updated!'})
+                        }
+                    });
+                });
+
                 M.AutoInit();
             },
             open: function() {
