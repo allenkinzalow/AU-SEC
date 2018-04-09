@@ -149,7 +149,6 @@ def get_policies():
     for policy in policies:
         groups = Group.query.filter(Group.group_id == policy['group_id']).all()
         auth_ids = [group.auth_id for group in groups]
-        print(auth_ids)
         group_members = []
         for auth_id in auth_ids:
             auth_user = Authorizer_User.query.filter(Authorizer_User.auth_id == auth_id).first()
@@ -160,13 +159,20 @@ def get_policies():
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
 def create_pending_policy(policy_id, expiration, sql_query):
-
     auth_group_id = generate_uuid()
     pending_policy = Pending_Policy(policy_id, sql_query, expiration, auth_group_id)
     db_session.add(pending_policy)
-    users = Group.query.filter(Group.group_id == auth_group_id).all()
-    for user in users:
-        pending_auth = Pending_Auth(user.auth_id, auth_group_id, None)
+    policy = Policy.query.filter(Policy.policy_id == policy_id).first()
+    auth_ids = Group.query.filter(Group.group_id == policy.group_id).all()
+    auth_ids = [user.auth_id for user in auth_ids]
+    auth_users = Authorizer_User.query.filter(Authorizer_User.auth_id.in_(auth_ids))
+    print(auth_users)
+    for user in auth_users:
+        print(user)
+        # Authy authorization
+        if int(user.preferred_comms) == 1:
+            uuid, authy_auth_id = send_auth_request(user.auth_id, int(user.contact_info), "Would you like to allow access to this data?", 60, {})
+        pending_auth = Pending_Auth(user.auth_id, auth_group_id, uuid)
         db_session.add(pending_auth)
     db_session.commit()
 
@@ -181,7 +187,7 @@ def update_data():
         policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
     if int(str(policy_bitwise)[0]):
         if not 'table_name' in request.json:
-            request.json['table_name'] = app.config['DEFAULT_DATA_TABLE']
+            request.json['table_name'] = DEFAULT_DATA_TABLE
         query_dict = {"command":"update","data_id":request.json["data_id"], "table_name":request.json["table_name"],
                       "columns":request.json["data"].keys(),
                       "values":list(request.json["data"].values())}
@@ -219,7 +225,7 @@ def select_data():
         if "data" in request.json:
             query_dict = {"columns":request.json["data"].keys()}
         if not 'table_name' in request.json:
-            request.json['table_name'] = app.config['DEFAULT_DATA_TABLE']
+            request.json['table_name'] = DEFAULT_DATA_TABLE
         query_dict["table_name"] = request.json["table_name"]
         if 'data_id' in request.json:
             query_dict["data_id"] = request.json["data_id"]
@@ -304,7 +310,7 @@ def send_auth_request(auth_id, authy_user_id, message, time_limit, details):
     return uuid, authy_auth_id
 
 @routes.route('/api/dispatch/send')
-def send_auth_request():
+def send_auth_request_api():
     if not check_json(request.json, 'authorization_id', 'authy_user_id', 'message', 'time_Limit', 'details'):
         abort(400)
     uuid, authy_auth_id = send_auth_request(request.json['authorization_id'], request.json['authy_user_id'], request.json['message'], request.json['time_Limit'], request.json['details'])
