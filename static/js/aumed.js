@@ -146,19 +146,21 @@ AUMed = {
                     }, "")
                 );
 
+                M.AutoInit();
+
                 var chipData = {};
                 AUMed.UI.patients._patients.forEach((p) => {
                     p.image = '';
                     p.tag = p.name;
                     chipData[p.name] = null;
                 });
-                $('.chips-autocomplete').chips({
+               /* $('.chips-autocomplete').chips({
                     autocompleteOptions: {
                       data: chipData,
                       limit: Infinity,
                       minLength: 1
                     }
-                  });
+                });*/
 
                 this.updatePolicies.forEach(p => {
                     var selectedVal = p.bit_test(6) ? "2" : "1"
@@ -167,10 +169,19 @@ AUMed = {
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
                     
+                    var group_data = {};
                     p.group_members.forEach(m => {
                         m.image = '';
                         m.tag = m.name;
-                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                        group_data[m.name] = m;
+                    });
+                    $("#authy_id_" + p.policy_id).chips({
+                        autocompleteOptions: {
+                          data: chipData,
+                          limit: Infinity,
+                          minLength: 1
+                        },
+                        data: group_data
                     });
                 });
                 
@@ -190,10 +201,20 @@ AUMed = {
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
 
+
+                    var group_data = {};
                     p.group_members.forEach(m => {
                         m.image = '';
                         m.tag = m.name;
-                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                        group_data[m.name] = m;
+                    });
+                    $("#authy_id_" + p.policy_id).chips({
+                        autocompleteOptions: {
+                          data: chipData,
+                          limit: Infinity,
+                          minLength: 1
+                        },
+                        data: group_data
                     });
                     
                 });
@@ -214,10 +235,19 @@ AUMed = {
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
                     
+                    var group_data = {};
                     p.group_members.forEach(m => {
                         m.image = '';
                         m.tag = m.name;
-                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                        group_data[m.name] = m;
+                    });
+                    $("#authy_id_" + p.policy_id).chips({
+                        autocompleteOptions: {
+                          data: chipData,
+                          limit: Infinity,
+                          minLength: 1
+                        },
+                        data: group_data
                     });
                 });
 
@@ -228,8 +258,7 @@ AUMed = {
                     console.log(id);
                     AUMed.UI.policies.open(id, 'amount');
                 });
-                
-                M.AutoInit();
+
                 elem = document.querySelector('#dataPolicyModal');
                 instance = M.Modal.init(elem, );
                 instance.open();
