@@ -36,12 +36,15 @@ AUMed = {
                 );
 
                 $(document).on('click', '.btn-medicine-policy', function () {
-                    AUMed.loadColumnPoliciesForUser('12345', 'medicine')
+                    var id = $(this).parents('li').first().data('id');
+                    console.log(id);
+                    AUMed.loadColumnPoliciesForUser(id, 'medicine')
                 });
 
                 $(document).on('click', '.btn-amount-policy', function () {
                     AUMed.loadColumnPoliciesForUser('12345', 'amount')
                 });
+
                 M.AutoInit();
                 
             },
