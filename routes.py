@@ -328,7 +328,10 @@ def get_auth_update():
     print(pending_auth)
     if status == 'approved':
         db_session.delete(pending_auth)
-        if Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
+        needed_auths = Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).all()
+        print(needed_auths)
+        if needed_auths:
+            print("RUN THE COMMAND")
             pending_policy = Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id)
             db_session.execute(pending_policy.command)
     elif status == 'denied':
