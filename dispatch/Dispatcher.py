@@ -8,7 +8,7 @@ class Dispatcher():
         """ Establish street cred """
 
         ## Get API Key from local json
-        self.config = json.load(open('config.json'))
+        self.config = json.load(open('dispatch/config.json'))
         self.authy_api = AuthyApiClient(self.config["api_key"])
 
     def oneTouchAuth(self, auth_id, user_id, message, seconds_to_expire, details):
