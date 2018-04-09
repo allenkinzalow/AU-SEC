@@ -141,7 +141,7 @@ def update_data():
         query_dict = {"command":"update","row_id":request.json["row_id"], "table_name":request.json["table_name"],
                       "columns":request.json["data"].keys(),
                       "values":list(request.json["data"].values())}
-        SQL_query,SQL_values = craftQuery(query_dict)    
+        SQL_query = craftQuery(query_dict)    
         pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
         db_session.add(pending_policy)
         db_session.commit()
@@ -159,13 +159,26 @@ def update_data():
 @routes.route('/api/data/select', methods=['PUT'])
 def select_data():
     query_dict = {"command":"select"}
-    if "data" in request.json:
-        query_dict = {"columns":request.json["data"].keys()}
-    query_dict["table_name"] = request.json["table_name"]
-    query_dict["row_id"] = request.json["row_id"]
-    #the value returned here is a single item list containing the row_id
-    SQL_query,SQL_values = craftQuery(query_dict)
-    return SQL_query
+    policy_bitwise = '000000'
+    policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    if policy:
+        policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
+    if int(str(policy_bitwise)[4]):
+        if "data" in request.json:
+            query_dict = {"columns":request.json["data"].keys()}
+        query_dict["table_name"] = request.json["table_name"]
+        query_dict["row_id"] = request.json["row_id"]
+        #the value returned here is a single item list containing the row_id
+        SQL_query = craftQuery(query_dict)
+        
+        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
+        db_session.add(pending_policy)
+        db_session.commit()
+        print("NEEDS AUTH")
+        return make_response(jsonify({'status': 'pending'}))
+    
+    if int(str(policy_bitwise)[5]):
+        print("NEED NOTIFY")
 
 
 # {data: {column_names: column_data}, table_name: table, auth_id: auth_id}
