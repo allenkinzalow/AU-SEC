@@ -319,10 +319,10 @@ def send_auth_request_api():
 def get_auth_update():
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
     print(request.json)
-    receive_uuid = (request.json['approval_request'])['uuid']
-    receive_auth_id = (request.json['approval_request'])['approval_request']['transaction']['hidden_details']['auth_id']
-    status = request.json['status']
-    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id and Pending_Auth.comms_info == receive_uuid)
+    receive_uuid = request.json['uuid']
+    receive_auth_id = request.json['approval_request']['transaction']['hidden_details']['auth_id']
+    status = request.json['status'].strip()
+    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id).filter(Pending_Auth.comms_info == str(receive_uuid)).first()
     if status == 'approved':
         db_session.delete(pending_auth)
         if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
