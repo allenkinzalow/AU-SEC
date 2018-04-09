@@ -18,6 +18,11 @@ def check_json(json, *params):
 def index():
     return render_template('index.html')
 
+@routes.route('/api/patients', methods=['GET'])
+def get_all_patients():
+    patients = Patient.query.all()
+    return jsonify([p.to_json() for p in patients])
+
 # {preferred_comms: <integer>{1,2,3}, contact_info: <string>}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
 def create_user():

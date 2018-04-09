@@ -26,9 +26,6 @@ AUMed = {
             _patients: [],
             populate: function() {
                 // todo: use API instead of hardcoding.
-                this._patients.push(new AUMed.Schema.Patient({auth_id: "12345", name: "Allen Kinzalow"}));
-                this._patients.push(new AUMed.Schema.Patient({auth_id: "12346", name: "Haven Barnes"}));
-
                 $('#patients_table').html(
                     this._patients.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#patient_entry_template').html(), {
@@ -51,8 +48,17 @@ AUMed = {
                 
             },
             open: function() {
+                var self = this;
                 $('#patients_card').show();
-                this.populate();
+                AUMed.Util.api({
+                    url: 'patients',
+                    callback: (data) => { 
+                        data.forEach(d => {
+                            self._patients.push(new AUMed.Schema.Patient(d));
+                        });
+                        self.populate();
+                    }
+                });
             },
             close: function() {
                 $('#patients_card').hide();
@@ -97,6 +103,7 @@ AUMed = {
                         });
                     }, "")
                 );
+                initializeTimeline();
                 M.AutoInit();
             },
             open: function() {
@@ -131,8 +138,6 @@ AUMed = {
                 instance.open();
             }
         },
-        authorizations: {},
-        timeline: {},
     },
 };
 
