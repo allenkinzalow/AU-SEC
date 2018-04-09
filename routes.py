@@ -74,7 +74,7 @@ def create_policy():
 
     data = Patient.query.get(request.json['data_id'])
     if not data:
-        abort(400, {'message': 'The data_id provided did not return any data'})
+        abort(400, {'message': 'The data_id provided did not return any policies'})
 
     if not 'table_name' in request.json:
         request.json['table_name'] = DEFAULT_DATA_TABLE
