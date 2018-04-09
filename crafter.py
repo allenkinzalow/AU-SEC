@@ -1,16 +1,24 @@
 from flask import Flask
+<<<<<<< HEAD
 import pymysql
+=======
+import mysql.connector
+from config import DEFAULT_DATA_TABLE
+>>>>>>> master
 
 #craftQuery(dictionary)
 #{"command":('update','select','insert','delete')
 # "table_name":"table_name" 
-# "row_id":"6bd87ed4-3add-11"
+# "data_id":"6bd87ed4-3add-11"
 # "columns":["name","medicine"]
 # "values":["jeff","DrugEx"]} -- Required for 'update','insert' only
 def craftQuery(dataDict):
     command = dataDict["command"]
-    table_name = dataDict["table_name"]
-    row_ID = dataDict["row_id"]
+    if not 'table_name' in dataDict:
+        table_name = DEFAULT_DATA_TABLE
+    else:
+        table_name = dataDict["table_name"]
+    row_ID = dataDict["data_id"]
     if "columns" in dataDict:
     	column_names = dataDict["columns"]
     else:
@@ -20,19 +28,18 @@ def craftQuery(dataDict):
          values = dataDict["values"]
          query += "UPDATE " + table_name + " SET"
          for c,item in enumerate(column_names):
-             query += " " + item + "="
+             query += " " + item + "=" + values[c]
              
-             if isinstance(values[c],int):
-                 query+= "%d"
-             elif isinstance(values[c],str):
-                 query+= "%s"
+             #if isinstance(values[c],int):
+             #    query+= "%d"
+             #elif isinstance(values[c],str):
+             #    query+= "%s"
              if c < len(column_names) - 1:
                  query+= ", "
-         query += " WHERE id=%s"""
-         print (query)
-         values.append(row_ID)
-         print (values)
-         return query,values
+         query += " WHERE id=" + row_ID
+         #values.append(row_ID)
+         #return query,values
+         return query
     elif command == "select":
          query = "SELECT "
          if column_names == []:
@@ -42,10 +49,8 @@ def craftQuery(dataDict):
                  query += item
                  if c < len(column_names) - 1:
                      query += ", "
-         query += " FROM " + table_name + " WHERE id = %s"
-         print (query)
-         print (row_ID)
-         return query,[row_ID]
+         query += " FROM " + table_name + " WHERE id = " + row_ID
+         return query
     elif command == "insert":
          auth_ID = dataDict["authorized_user"] 
          values = dataDict["values"]
@@ -65,16 +70,13 @@ def craftQuery(dataDict):
          query+=")"
          values.insert(0,auth_ID)
          values.insert(0,row_ID)
-         print (query)
-         print (values)
          return query,values           
     elif command == "delete":
-        query += "DELETE FROM " + table_name + " WHERE id = %s"
-        print (query)
+        query += "DELETE FROM " + table_name + " WHERE id = " + row_ID
         return query,[row_ID]
     else:
         return "INVALID COMMAND"
 
 if __name__ == "__main__":
-    request = {"command":"delete","table":"patients","id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"]}
-    craftQuery(request)
+    request = {"command":"delete","table":"patients","data_id":"6bd87ed4-3add-11","columns":["name","medicine"],"values":["jeff","drugEx"], "table_name": "patients"}
+    print(craftQuery(request))
