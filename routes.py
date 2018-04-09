@@ -191,7 +191,8 @@ def update_data():
         query_dict = {"command":"update","data_id":request.json["data_id"], "table_name":request.json["table_name"],
                       "columns":request.json["data"].keys(),
                       "values":list(request.json["data"].values())}
-        SQL_query, SQL_values = craftQuery(query_dict)    
+        SQL_query = craftQuery(query_dict)    
+        print(SQL_query)
         
         create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
 
@@ -232,7 +233,7 @@ def select_data():
         else:
             query_dict['data_id'] = '*'
         #the value returned here is a single item list containing the data_id
-        SQL_query, SQL_values = craftQuery(query_dict)
+        SQL_query = craftQuery(query_dict)
         
         create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
         print("NEEDS AUTH")
@@ -289,7 +290,7 @@ def delete_data():
         query_dict = dict(request.json)
         query_dict["command"] = "delete"
         # the value returned here is a single item list containing the data_id
-        SQL_query, SQL_values = craftQuery(query_dict)
+        SQL_query = craftQuery(query_dict)
         create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
 
         print("NEEDS AUTH")   

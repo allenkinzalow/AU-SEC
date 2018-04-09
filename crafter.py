@@ -47,30 +47,10 @@ def craftQuery(dataDict):
                  if c < len(column_names) - 1:
                      query += ", "
          query += " FROM " + table_name + " WHERE id = " + row_ID
-         return query
-    elif command == "insert":
-         auth_ID = dataDict["authorized_user"] 
-         values = dataDict["values"]
-         query += "INSERT INTO "+ table_name +" (id,authorized_user,"
-         for c,item in enumerate(column_names):
-             query+=item
-             if c < len(column_names) - 1:
-                  query+=","
-         query+=") VALUES(%s,%s,"
-         for c2,value in enumerate(values):
-             if isinstance(value,int):
-                 query+= "%d"
-             elif isinstance(value,str):
-                 query+= "%s"
-             if c2 < len(values) - 1:
-                 query += ","
-         query+=")"
-         values.insert(0,auth_ID)
-         values.insert(0,row_ID)
-         return query,values           
+         return query         
     elif command == "delete":
         query += "DELETE FROM " + table_name + " WHERE id = " + row_ID
-        return query,[row_ID]
+        return query
     else:
         return "INVALID COMMAND"
 
