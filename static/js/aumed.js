@@ -33,13 +33,13 @@ AUMed = {
                 );
 
                 $(document).on('click', '.btn-medicine-policy', function () {
-                    var id = $(this).parents('li').first().data('auth_id');
+                    var id = $(this).parents('li').first().data('auth-id');
                     console.log(id);
                     AUMed.UI.policies.open(id, 'medicine');
                 });
 
                 $(document).on('click', '.btn-amount-policy', function () {
-                    var id = $(this).parents('li').first().data('auth_id');
+                    var id = $(this).parents('li').first().data('auth-id');
                     console.log(id);
                     AUMed.UI.policies.open(id, 'amount');
                 });
@@ -134,6 +134,7 @@ AUMed = {
                 var self = this;
                 AUMed.Util.api({
                     url: 'policies/get_policies',
+                    type: 'POST',
                     data: {
                         'column_names': [column_name],
                         'auth_ids': [auth_id]

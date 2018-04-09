@@ -19,6 +19,14 @@ AUMed.Schema = {
         this.table_name = data.table_name;
         this.expiration = data.expiration;
         this.policy_bitwise = data.policy_bitwise;
+
+        this.update = function() {
+
+        };
+
+        this.bit_test = function(bit) {
+            return ((this.policy_bitwise>>bit) % 2 != 0);
+        };
     },
     History: function(data) {
         this.data_id = data.data_id;

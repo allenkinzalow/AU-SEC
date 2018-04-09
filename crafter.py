@@ -1,10 +1,7 @@
 from flask import Flask
-<<<<<<< HEAD
+
 import pymysql
-=======
-import mysql.connector
 from config import DEFAULT_DATA_TABLE
->>>>>>> master
 
 #craftQuery(dictionary)
 #{"command":('update','select','insert','delete')
