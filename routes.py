@@ -100,7 +100,8 @@ def create_policy():
     group_members = []
     for auth_id in request.json['authorizers']:
         auth_user = Authorizer_User.query.get(auth_id)
-        group_members.append(auth_user.get_object())
+        if auth_user:
+            group_members.append(auth_user.get_object())
 
     db_session.commit()
     return make_response(jsonify({'policy_ids': policy_ids, 'group_id': group_id, 'group_members': group_members, 'status': 'success'}), 200)
@@ -158,7 +159,7 @@ def get_policies():
 
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
-def create_pending_policy(policy_id, expiration, sql_query):
+def create_pending_policy(policy_id, sql_query, expiration):
     auth_group_id = generate_uuid()
     pending_policy = Pending_Policy(policy_id, sql_query, expiration, auth_group_id)
     db_session.add(pending_policy)
@@ -192,6 +193,7 @@ def update_data():
                       "columns":request.json["data"].keys(),
                       "values":list(request.json["data"].values())}
         SQL_query = craftQuery(query_dict)    
+        print(SQL_query)
         
         create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
 
@@ -267,7 +269,7 @@ def select_data():
 @routes.route('/api/data/insert', methods=['POST'])
 def insert_data():
     if not check_json(request.json, 'auth_id', 'data'):
-        abort(400)
+        abort(400, {'message': 'Missing json values (auth_id, data)'})
     patient = Patient(request.json['data']['name'], request.json['auth_id'], request.json['data']['medicine'], request.json['data']['amount'])
     db_session.add(patient)
     db_session.commit()
@@ -289,7 +291,7 @@ def delete_data():
         query_dict = dict(request.json)
         query_dict["command"] = "delete"
         # the value returned here is a single item list containing the data_id
-        SQL_query,SQL_values = craftQuery(query_dict)
+        SQL_query = craftQuery(query_dict)
         create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
 
         print("NEEDS AUTH")   
@@ -328,17 +330,21 @@ def get_auth_update():
     print(pending_auth)
     if status == 'approved':
         db_session.delete(pending_auth)
-        if Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
-            pending_policy = Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id)
+        needed_auths = Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).all()
+        print(needed_auths)
+        if needed_auths:
+            print("RUN THE COMMAND")
+            pending_policy = Pending_Policy.query.filter(Pending_Policy.auth_group_id == pending_auth.group_id).first()
+            print(pending_policy.command)
             db_session.execute(pending_policy.command)
     elif status == 'denied':
         # find pending policy and drop
-        Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Policy.query.filter(Pending_Policy.auth_group_id == pending_auth.group_id).delete()
         Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()
     #else if status == 'expired':
     else:
         # find pending policy and drop for now
-        Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Policy.query.filter(Pending_Policy.auth_group_id == pending_auth.group_id).delete()
         Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()  
     
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
