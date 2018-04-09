@@ -42,10 +42,7 @@ class Authorizer_User(Base):
 		self.preferred_comms = preferred_comms
 		self.contact_info = contact_info
 		self.name = name
-
-	def __repr__(self):
-		return '<User %r>: %r: %r' % self.data_id, self.preferred_comms, self.contact_info
-
+		
 	def get_object(self):
 		return {
 			'auth_id': self.auth_id,

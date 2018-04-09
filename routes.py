@@ -21,7 +21,7 @@ def index():
 @routes.route('/api/patients', methods=['GET'])
 def get_all_patients():
     patients = Patient.query.all()
-    return jsonify([p.to_json() for p in patients])
+    return jsonify([p.get_object() for p in patients])
 
 # {preferred_comms: <integer>{1,2,3}, contact_info: <string>, name: name}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
@@ -145,6 +145,17 @@ def get_policies():
         policies = [policy.get_object() for policy in policies if policy.column_name in request.json['column_names']]
     else:
         policies = [policy.get_object() for policy in policies]
+    for policy in policies:
+        groups = Group.query.filter(Group.group_id == policy['group_id']).all()
+        auth_ids = [group.auth_id for group in groups]
+        print(auth_ids)
+        group_members = []
+        for auth_id in auth_ids:
+            auth_user = Authorizer_User.query.filter(Authorizer_User.auth_id == auth_id).first()
+            if auth_user:
+                group_members.append(auth_user.get_object())
+        policy['group_members'] = group_members
+
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
 def create_pending_policy(policy_id, expiration, sql_query):
@@ -157,7 +168,6 @@ def create_pending_policy(policy_id, expiration, sql_query):
         pending_auth = Pending_Auth(user.auth_id, auth_group_id, None)
         db_session.add(pending_auth)
     db_session.commit()
-
 
 #{data: {column_names: column_data}, table_name: table, data_id: id}
 @routes.route('/api/data/update', methods=['POST'])
@@ -287,18 +297,17 @@ def delete_data():
     db_session.commit()
     return make_response(jsonify({'status': 'success'}))
 
-@routes.route('/api/data/view_history', methods=[''])
-def view_data_history():    
-    return
+def send_auth_request(auth_id, authy_user_id, message, time_limit, details):
+    pusher = Dispatcher()
+    uuid, authy_auth_id = pusher.oneTouchAuth(auth_id, authy_user_id, message, time_limit, details)
+    return uuid, authy_auth_id
 
 @routes.route('/api/dispatch/send')
 def send_auth_request():
     if not check_json(request.json, 'authorization_id', 'authy_user_id', 'message', 'time_Limit', 'details'):
         abort(400)
-    pusher = Dispatcher()
-    uuid, authy_auth_id = pusher.oneTouchAuth(authorization_id,authy_user_id,message,time_Limit,details)
-    ##uuid and authy likely need to be put into a table. Unfamiliar with db setup so not sure which one.
-    return uuid, authy_auth_id
+    uuid, authy_auth_id = send_auth_request(request.json['authorization_id'], request.json['authy_user_id'], request.json['message'], request.json['time_Limit'], request.json['details'])
+    return make_response(jsonify({'uuid': uuid, 'authy_auth_id': authy_auth_id}))
 
 @routes.route('/api/dispatch/receive', methods=['POST'])
 def get_auth_update():
@@ -327,7 +336,7 @@ def get_auth_update():
     db_session.commit()
     return uuid, auth_result
 
-@routes.route('/api/history/<int:data_id>', methods=['GET'])
+@routes.route('/api/history/<data_id>', methods=['GET'])
 def get_history(data_id):
     entries = History.query.filter(History.data_id==data_id)
     return jsonify([e.get_object() for e in entries])
