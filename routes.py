@@ -291,17 +291,8 @@ def view_data_history():
 
 @routes.route('/api/dispatch/send')
 def send_auth_request():
-    if not check_json(request.json, insert_Relevant_Criteria_Here):
+    if not check_json(request.json, 'authorization_id', 'authy_user_id', 'message', 'time_Limit', 'details'):
         abort(400)
-    
-    ##authorization_id = ?
-    ##authy_user_id = ?
-    ##message=?
-    ##time_Limit=?
-    ##details={}
-    ####details["Doctor"]=?
-    ####details["Medicine"]=?
-    ####details["Dosage"]=?
     pusher = Dispatcher()
     uuid, authy_auth_id = pusher.oneTouchAuth(authorization_id,authy_user_id,message,time_Limit,details)
     ##uuid and authy likely need to be put into a table. Unfamiliar with db setup so not sure which one.
@@ -309,14 +300,29 @@ def send_auth_request():
 
 @routes.route('/api/dispatch/receive', methods=['POST'])
 def get_auth_update():
-    #if not check_json(request.json):
-    #    abort(400)
-    print(request.json)
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
-    uuid = (request.json['approval_request'])['uuid']
+    receive_uuid = (request.json['approval_request'])['uuid']
+    receive_auth_id = (request.json['approval_request'])['approval_request']['transaction']['hidden_details']['auth_id']
+    status = request.json['status']
+    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id and Pending_Auth.comms_info == receive_uuid)
+    if status == 'approved':
+        db_session.delete(pending_auth)
+        if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
+            query = Pending_Policy.query.filter_by(Pending_Auth.group_id == pending_auth.group_id)
+            Patient.query.execute(query.command)
+    else if status == 'denied':
+        # find pending policy and drop
+        Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()
+    #else if status == 'expired':
+    else:
+        # find pending policy and drop for now
+        Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()  
     auth_result=(request.json['success'])
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
     ##Similar to send_auth_req, probably aren't going to be returning the uuid/auth_result, just placeholding for now.
+    db_session.commit()
     return uuid, auth_result
 
 @routes.route('/api/history/<int:data_id>', methods=['GET'])
