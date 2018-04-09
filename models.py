@@ -132,19 +132,19 @@ class History(Base):
 	old_value = Column(String(64))
 	new_value = Column(String(64))
 	time_stamp = Column(DateTime())
-	column = Column(String(255))
-	table = Column(String(255))
+	column_name = Column(String(255))
+	table_name = Column(String(255))
 	auth_id = Column(String(16))
 
 	def __init__(self, data_id=None, operation=None, old_value=None, new_value=None, 
-		time_stamp=None, column=None, table=None, auth_id=None):
+		time_stamp=None, column_name=None, table_name=None, auth_id=None):
 		self.data_id = data_id
 		self.operation = operation
 		self.old_value = old_value
 		self.new_value = new_value
 		self.time_stamp = time_stamp
-		self.column = column
-		self.table = table
+		self.column_name = column
+		self.table_name = table
 		self.auth_id = auth_id
 
 	def get_object(self):
@@ -154,8 +154,8 @@ class History(Base):
 			"old_value": self.old_value,
 			"new_value": self.new_value,
 			"time_stamp": self.time_stamp,
-			"column": self.column,
-			"table": self.table,
+			"column": self.column_name,
+			"table": self.table_name,
 			"auth_id": self.auth_id,
 		}
 
