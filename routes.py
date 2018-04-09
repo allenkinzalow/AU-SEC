@@ -340,3 +340,14 @@ def get_auth_update():
 def get_history(data_id):
     entries = History.query.filter(History.data_id==data_id)
     return jsonify([e.get_object() for e in entries])
+
+# {data_id: id, table_name: table}
+@routes.route('/api/data/deadman', methods=['POST'])
+def send_dead_man()
+    policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    query_dict = dict(request.json)
+    query_dict["command"] = "delete"
+    # the value returned here is a single item list containing the data_id
+    SQL_query,SQL_values = craftQuery(query_dict)
+    create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
+    return make_response(jsonify({'status': 'pending'}))
