@@ -289,23 +289,25 @@ def get_auth_update():
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
     receive_uuid = (request.json['approval_request'])['uuid']
     receive_auth_id = (request.json['approval_request'])['approval_request']['transaction']['hidden_details']['auth_id']
-    receive_pending_group_id = Pending_Auth.query.filter_by(Pending_Auth.Pending_group_id.in_(receive_auth_id)).all()
     status = request.json['status']
+    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id and Pending_Auth.comms_info == receive_uuid)
     if status == 'approved':
-        Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id).delete()
-        if Pending_Auth.query.filter_by(Pending_Auth.pending_group_id == receive_pending_group_id).count() == 0:
-
+        db_session.delete(pending_auth)
+        if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
+            query = Pending_Policy.query.filter_by(Pending_Auth.group_id == pending_auth.group_id)
+            Patient.query.execute(query.command)
     else if status == 'denied':
         # find pending policy and drop
-        Pending_Auth.query.filter_by(Pending_Auth.Pending_group_id == receive_pending_group_id).delete()
+        Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()
     #else if status == 'expired':
     else:
         # find pending policy and drop for now
-        Pending_Auth.query.filter_by(Pending_Auth.Pending_group_id == receive_pending_group_id).delete()
-
-
+        Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()  
     auth_result=(request.json['success'])
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
     ##Similar to send_auth_req, probably aren't going to be returning the uuid/auth_result, just placeholding for now.
+    db_session.commit()
     return uuid, auth_result
 

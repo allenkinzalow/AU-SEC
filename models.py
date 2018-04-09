@@ -13,21 +13,8 @@ class Patient(Base):
 	medicine = Column(String(64))
 	amount = Column(Integer)
 
-	def __init__(self, name=None, auth_id=None, medicine=None, amount=None):
-		self.data_id = generate_uuid()
-		self.name = name
-		self.auth_id = auth_id
-		self.medicine = medicine
-		self.amount = amount
-
-	def get_object(self):
-		return {
-			'data_id': self.data_id,
-			'name': self.name,
-			'auth_id': self.auth_id,
-			'medicine': self.medicine,
-			'amount': self.amount
-		}
+	def get_columns(self):
+		return ['data_id', 'name', ]
 
 
 class Authorizer_User(Base):
@@ -35,24 +22,14 @@ class Authorizer_User(Base):
 	auth_id = Column(String(16), primary_key=True)
 	preferred_comms = Column(Integer)
 	contact_info = Column(String(255))
-	name = Column(String(255))
 
-	def __init__(self, preferred_comms=None, contact_info=None, name=None):
+	def __init__(self, preferred_comms=None, contact_info=None):
 		self.auth_id = generate_uuid()
 		self.preferred_comms = preferred_comms
 		self.contact_info = contact_info
-		self.name = name
 
 	def __repr__(self):
 		return '<User %r>: %r: %r' % self.data_id, self.preferred_comms, self.contact_info
-
-	def get_object(self):
-		return {
-			'auth_id': self.auth_id,
-			'preferred_comms': self.preferred_comms,
-			'contact_info': self.contact_info,
-			'name': self.name
-		}
 
 
 class Policy(Base):
@@ -90,18 +67,11 @@ class Policy(Base):
 
 class Pending_Policy(Base):
 	__tablename__ = 'pending_policies'
-	pending_id = Column(String(16), primary_key=True)
+	id = Column(String(16), primary_key=True)
 	policy_id = Column(String(16))
 	command = Column(String(255))
 	expiration = Column(DateTime)
-	auth_group_id = Column(String(16))
-
-	def __init__(self, policy_id, command, expiration, auth_group_id):
-		self.pending_id = generate_uuid()
-		self.policy_id = policy_id
-		self.command = command
-		self.expiration = expiration
-		self.auth_group_id = auth_group_id
+	group_id = Column(String(16))
 
 class Group(Base):
 	__tablename__ = 'groups'
@@ -118,7 +88,7 @@ class Pending_Auth(Base):
 	auth_id = Column(String(16))
 	comms_info = Column(String(64))
 
-	def __init__(self, auth_id=None, group_id=None, comms_info=None):
+	def __init__(self, auth_id=None, group_id=None):
 		self.auth_id = auth_id
 		self.group_id = group_id
 		self.comms_info = comms_info
