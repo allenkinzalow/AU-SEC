@@ -318,6 +318,7 @@ def send_auth_request_api():
 @routes.route('/api/dispatch/receive', methods=['POST'])
 def get_auth_update():
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
+    print(request.json)
     receive_uuid = (request.json['approval_request'])['uuid']
     receive_auth_id = (request.json['approval_request'])['approval_request']['transaction']['hidden_details']['auth_id']
     status = request.json['status']
