@@ -100,7 +100,8 @@ def create_policy():
     group_members = []
     for auth_id in request.json['authorizers']:
         auth_user = Authorizer_User.query.get(auth_id)
-        group_members.append(auth_user.get_object())
+        if auth_user:
+            group_members.append(auth_user.get_object())
 
     db_session.commit()
     return make_response(jsonify({'policy_ids': policy_ids, 'group_id': group_id, 'group_members': group_members, 'status': 'success'}), 200)
@@ -268,7 +269,7 @@ def select_data():
 @routes.route('/api/data/insert', methods=['POST'])
 def insert_data():
     if not check_json(request.json, 'auth_id', 'data'):
-        abort(400)
+        abort(400, {'message': 'Missing json values (auth_id, data)'})
     patient = Patient(request.json['data']['name'], request.json['auth_id'], request.json['data']['medicine'], request.json['data']['amount'])
     db_session.add(patient)
     db_session.commit()
