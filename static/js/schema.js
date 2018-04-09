@@ -33,11 +33,12 @@ AUMed.Schema = {
     },
     History: function(data) {
         this.data_id = data.data_id;
-        this.operation = data.op;
+        this.operation = data.operation;
+        this.time_stamp = data.time_stamp;
         this.old_value = data.old_Value;
         this.new_value = data.new_value;
         this.field = data.column;
-        this.auth = data.auth;
+        this.auth_id = data.auth_id;
 
         this.revert = function() {};
     },

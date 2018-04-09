@@ -95,13 +95,15 @@ AUMed = {
             _history: [],
             populate: function() {
                 var html = this._history.reduce(function(str, item) {
+                    var action = item.operation == "INSERT" ? "Created" : "Updated";
+                    var capitalField = AUMed.Util.capitalize(item.field);
                     return str +  AUMed.Util.template($('#timeline_entry_template').html(), {
                         id: item.data_id,
                         color: "green",
-                        icon: "lock",
-                        title: item.field + " " + item.operation,
-                        action: "this is a test!",
-                        date: Date.now()
+                        icon: item.operation == "INSERT" ? "add" : "lock",
+                        title: capitalField + " " + action,
+                        action: item.operation == "INSERT" ? action + " inserted with a value of " + item.new_value : action + " was changed from " + item.old_value + " to " + item.new_value,
+                        date: AUMed.Util.getFormattedDate(new Date(item.time_stamp))
                     });
                 }, "");
                 if(html == "")
@@ -117,8 +119,9 @@ AUMed = {
                     url: 'history/' + data_id,
                     callback: (data) => { 
                         data.forEach(d => {
-                            self._patients.push(new AUMed.Schema.History(d));
+                            self._history.push(new AUMed.Schema.History(d));
                         });
+                        self._history = self._history.reverse();
                         self.populate();
                     }
                 });
