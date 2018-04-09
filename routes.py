@@ -333,6 +333,7 @@ def get_auth_update():
         if needed_auths:
             print("RUN THE COMMAND")
             pending_policy = Pending_Policy.query.filter(Pending_Policy.auth_group_id == pending_auth.group_id).first()
+            print(pending_policy.command)
             db_session.execute(pending_policy.command)
     elif status == 'denied':
         # find pending policy and drop
