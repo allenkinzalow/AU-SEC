@@ -26,11 +26,13 @@ class Authorizer_User(Base):
 	auth_id = Column(String(16), primary_key=True)
 	preferred_comms = Column(Integer)
 	contact_info = Column(String(255))
+	name = Column(String(255))
 
-	def __init__(self, preferred_comms=None, contact_info=None):
+	def __init__(self, preferred_comms=None, contact_info=None, name=None):
 		self.auth_id = generate_uuid()
 		self.preferred_comms = preferred_comms
 		self.contact_info = contact_info
+		self.name = name
 
 	def __repr__(self):
 		return '<User %r>: %r: %r' % self.data_id, self.preferred_comms, self.contact_info
@@ -97,8 +99,10 @@ class Pending_Auths(Base):
 	__tablename__ = 'pending_auths'
 	group_id = Column(String(16), primary_key=True)
 	auth_id = Column(String(16))
+	comms_info = Column(String(64))
 
-	def __init__(self, auth_id=None, group_id=None):
+	def __init__(self, auth_id=None, group_id=None, comms_info=None):
 		self.auth_id = auth_id
 		self.group_id = group_id
+		self.comms_info = comms_info
 

@@ -18,12 +18,12 @@ def check_json(json, *params):
 def index():
     return render_template('index.html')
 
-# {preferred_comms: <integer>{1,2,3}, contact_info: <string>}
+# {preferred_comms: <integer>{1,2,3}, contact_info: <string>, name: name}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
 def create_user():
-    if not check_json(request.json, 'preferred_comms', 'contact_info'):
-        abort(400, {'message': 'Essential json keys not found (preferred_comms, contact_info)'})
-    user = Authorizer_User(request.json['preferred_comms'], request.json['contact_info'])
+    if not check_json(request.json, 'preferred_comms', 'contact_info', 'name'):
+        abort(400, {'message': 'Essential json keys not found (preferred_comms, contact_info, name)'})
+    user = Authorizer_User(request.json['preferred_comms'], request.json['contact_info'], request.json['name'])
     db_session.add(user)
     db_session.commit()
     return make_response(jsonify({"auth_id": user.auth_id}), 200)
@@ -31,12 +31,16 @@ def create_user():
 # {auth_id: id, preferred_comms: <integer>{1,2,3}, contact_info: <string>}
 @routes.route('/api/auth_users/edit_user', methods=['POST'])
 def edit_user():
-    if not check_json(request.json, 'auth_id', 'preferred_comms', 'contact_info'):
-        abort(400, {'message': 'Essential json keys not found (auth_id, preferred_comms, contact_info)'})
+    if not check_json(request.json, 'auth_id'):
+        abort(400, {'message': 'Essential json keys not found (auth_id)'})
 
     user = Authorizer_User.query.get(request.json['auth_id'])
-    user.preferred_comms = int(request.json['preferred_comms'])
-    user.contact_info = request.json['contact_info']
+    if 'preferred_comms' in request.json:
+        user.preferred_comms = int(request.json['preferred_comms'])
+    if 'contact_info' in request.json:
+        user.contact_info = request.json['contact_info']
+    if 'name' in request.json:
+        user.name = request.json['name']
     db_session.commit()
     return make_response(jsonify({"auth_id": user.auth_id, "status": "success"}), 200)
 
@@ -48,7 +52,7 @@ def create_auth_group(authorizers):
         db_session.add(g)
     return group_id
 
-# {data_id: id, authorz`izers: [id1, id2, ...], column_name: name, table_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
+# {data_id: id, authorizers: [id1, id2, ...], column_name: name, table_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
 # Policy bitwise: 6 bits indicating on/off for notification/authorization of delete/update/select
 @routes.route('/api/policies/create_policy', methods=['POST'])
 def create_policy():
@@ -138,7 +142,7 @@ def update_data():
     if policy:
         policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
     if int(str(policy_bitwise)[0]):
-        query_dict = {"command":"update","row_id":request.json["row_id"], "table_name":request.json["table_name"],
+        query_dict = {"command":"update","data_id":request.json["data_id"], "table_name":request.json["table_name"],
                       "columns":request.json["data"].keys(),
                       "values":list(request.json["data"].values())}
         SQL_query,SQL_values = craftQuery(query_dict)    
@@ -152,6 +156,13 @@ def update_data():
     if int(str(policy_bitwise)[1]):
         print("NEED NOTIFY")
 
+    patient = Patient.query.get(request.json['data_id'])
+    if 'name' in request.json['data']:
+        patient.name = request.json['data']['name']
+    if 'medicine' in request.json['data']:
+        patient.name = request.json['data']['medicine']
+    if 'amount' in request.json['data']:
+        patient.name = request.json['data']['amount']
 
     return make_response(jsonify({'query': SQL_query, 'status': 'success'}))
 
