@@ -164,9 +164,10 @@
                 <label>Policy Type</label>
             </div>
             <div class="col s5">
-                <!--<input id="authy_id" type="text" class="validate" value="%auth_id%">
-                <label for="authy_id">Authy ID</label>-->
-                <div id="authy_id_%id%" class="chips chips-autocomplete"></div>
+                <select id="authy_id_%id%" class="authy-selects" multiple>
+                    <option value="" disabled>Choose an authorizer</option>
+                </select>
+                <label>Multiselect Authorizers</label>
             </div>
         <a class="input-field waves-effect waves-light btn-small red col s2 btn-delete-policy">Remove</a>
     </li>
