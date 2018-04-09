@@ -23,12 +23,12 @@ def get_all_patients():
     patients = Patient.query.all()
     return jsonify([p.to_json() for p in patients])
 
-# {preferred_comms: <integer>{1,2,3}, contact_info: <string>}
+# {preferred_comms: <integer>{1,2,3}, contact_info: <string>, name: name}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
 def create_user():
-    if not check_json(request.json, 'preferred_comms', 'contact_info'):
-        abort(400, {'message': 'Essential json keys not found (preferred_comms, contact_info)'})
-    user = Authorizer_User(request.json['preferred_comms'], request.json['contact_info'])
+    if not check_json(request.json, 'preferred_comms', 'contact_info', 'name'):
+        abort(400, {'message': 'Essential json keys not found (preferred_comms, contact_info, name)'})
+    user = Authorizer_User(request.json['preferred_comms'], request.json['contact_info'], request.json['name'])
     db_session.add(user)
     db_session.commit()
     return make_response(jsonify({"auth_id": user.auth_id}), 200)
@@ -36,14 +36,28 @@ def create_user():
 # {auth_id: id, preferred_comms: <integer>{1,2,3}, contact_info: <string>}
 @routes.route('/api/auth_users/edit_user', methods=['POST'])
 def edit_user():
-    if not check_json(request.json, 'auth_id', 'preferred_comms', 'contact_info'):
-        abort(400, {'message': 'Essential json keys not found (auth_id, preferred_comms, contact_info)'})
+    if not check_json(request.json, 'auth_id'):
+        abort(400, {'message': 'Essential json keys not found (auth_id)'})
 
     user = Authorizer_User.query.get(request.json['auth_id'])
-    user.preferred_comms = int(request.json['preferred_comms'])
-    user.contact_info = request.json['contact_info']
+    if 'preferred_comms' in request.json:
+        user.preferred_comms = int(request.json['preferred_comms'])
+    if 'contact_info' in request.json:
+        user.contact_info = request.json['contact_info']
+    if 'name' in request.json:
+        user.name = request.json['name']
     db_session.commit()
     return make_response(jsonify({"auth_id": user.auth_id, "status": "success"}), 200)
+
+# {name: name}
+@routes.route('/api/auth_users/get_user', methods=['POST'])
+def get_user():
+    if not check_json(request.json, 'name'):
+        abort(400, {'message': 'Essential json keys not found (name)'})
+
+    users = Authorizer_User.query.filter(Authorizer_User.name == request.json['name']).all()
+    return make_response(jsonify({'auth_users': [user.get_object() for user in users]}))
+
 
 def create_auth_group(authorizers):
     """ Helper function to create an authorization group and populate the rows in groups table """
@@ -53,7 +67,7 @@ def create_auth_group(authorizers):
         db_session.add(g)
     return group_id
 
-# {data_id: id, authorz`izers: [id1, id2, ...], column_name: name, table_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
+# {data_id: id, authorizers: [id1, id2, ...], column_name: name, table_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
 # Policy bitwise: 6 bits indicating on/off for notification/authorization of delete/update/select
 @routes.route('/api/policies/create_policy', methods=['POST'])
 def create_policy():
@@ -88,7 +102,7 @@ def create_policy():
     db_session.commit()
     return make_response(jsonify({'policy_ids': policy_ids, 'group_ids': group_ids, 'status': 'success'}), 200)
 
-# {policy_ids: [id1m id2, ...], authorizers: [id1, id2, ...], column_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
+# {policy_ids: [id1, id2, ...], authorizers: [id1, id2, ...], column_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
 @routes.route('/api/policies/edit_policy', methods=['POST'])
 def edit_policy():
     if not check_json(request.json, 'policy_ids'):
@@ -111,7 +125,7 @@ def edit_policy():
     return make_response(jsonify({'policy_ids': request.json['policy_ids'], 'status': 'success'}), 200)
 
 # {policy_ids: [id1, id2, ...], auth_ids: [id1, id2, ...], data_ids: [id1, id2, ...], column_names: [column1, column2, ...]}
-@routes.route('/api/policies/get_policies', methods=['GET'])
+@routes.route('/api/policies/get_policies', methods=['POST'])
 def get_policies():
     if 'policy_ids' in request.json:
         policies = Policy.query.filter(Policy.policy_id.in_(request.json['policy_ids'])).all()
@@ -123,60 +137,144 @@ def get_policies():
         policies = Policy.query.filter(Policy.data_id.in_(request.json['data_ids'])).all()
     else:
         abort(400, {'message': 'One of (policy_ids, auth_ids, data_ids) needed'})
-
+    if not policies:
+        abort(400, {'message': 'No policies with those ids exist'})
     if 'column_names' in request.json:
         policies = [policy.get_object() for policy in policies if policy.column_name in request.json['column_names']]
     else:
         policies = [policy.get_object() for policy in policies]
-    return make_response(jsonify({'policies': policies}))
+    return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
-#{data: {column_names: column_data}, table_name: table, authorized_user: auth_id, row_id: id}
-@routes.route('/api/data/update', methods=['PUT'])
+#{data: {column_names: column_data}, table_name: table, data_id: id}
+@routes.route('/api/data/update', methods=['POST'])
 def update_data():
-    
-    query_dict = {"command":"update","row_id":request.json["row_id"], "table_name":request.json["table_name"],
-                  "columns":request.json["data"].keys(),
-                  "values":list(request.json["data"].values())}
-    SQL_query,SQL_values = craftQuery(query_dict)    
-    return SQL_query
+    if not check_json(request.json, 'data_id', 'data'):
+        abort(400, {'message': 'Essential json keys not found (data_id, data)'})
+    if not check_json(request.json, 'data_id'):
+        abort(400)
+    policy_bitwise = '000000'
+    policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    if policy:
+        policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
+    if int(str(policy_bitwise)[0]):
+        query_dict = {"command":"update","data_id":request.json["data_id"], "table_name":request.json["table_name"],
+                      "columns":request.json["data"].keys(),
+                      "values":list(request.json["data"].values())}
+        SQL_query = craftQuery(query_dict)    
+        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
+        db_session.add(pending_policy)
+        db_session.commit()
 
-# {row_id: id, table_name: table, data: {column_name: "", }}
-@routes.route('/api/data/select', methods=['PUT'])
+        print("NEEDS AUTH")   
+        return make_response(jsonify({'status': 'pending'}))
+
+    if int(str(policy_bitwise)[1]):
+        print("NEED NOTIFY")
+
+    patient = Patient.query.get(request.json['data_id'])
+    if 'name' in request.json['data']:
+        patient.name = request.json['data']['name']
+    if 'medicine' in request.json['data']:
+        patient.medicine = request.json['data']['medicine']
+    if 'amount' in request.json['data']:
+        patient.amount = request.json['data']['amount']
+    db_session.commit()
+    return make_response(jsonify({'patient': patient.get_object(), 'status': 'success'}))
+
+# {data_id: id, table_name: table, data: {column_name: "", }}
+@routes.route('/api/data/select', methods=['POST'])
 def select_data():
-    query_dict = {"command":"select"}
-    if "data" in request.json:
-        query_dict = {"columns":request.json["data"].keys()}
-    query_dict["table_name"] = request.json["table_name"]
-    query_dict["row_id"] = request.json["row_id"]
-    #the value returned here is a single item list containing the row_id
-    SQL_query,SQL_values = craftQuery(query_dict)
-    return SQL_query
+    policy_bitwise = '000000'
+    policy = None
+    if 'data_id' in request.json:
+        policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    if policy:
+        policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
+    if int(str(policy_bitwise)[4]):
+        query_dict = {"command":"select"}
+        if "data" in request.json:
+            query_dict = {"columns":request.json["data"].keys()}
+        query_dict["table_name"] = request.json["table_name"]
+        if 'data_id' in request.json:
+            query_dict["data_id"] = request.json["data_id"]
+        else:
+            query_dict['data_id'] = '*'
+        #the value returned here is a single item list containing the data_id
+        SQL_query = craftQuery(query_dict)
+        
+        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
+        db_session.add(pending_policy)
+        db_session.commit()
+        print("NEEDS AUTH")
+        return make_response(jsonify({'status': 'pending'}))
+    
+    if int(str(policy_bitwise)[5]):
+        print("NEED NOTIFY")
+
+    if 'data_id' in request.json:
+        patient = Patient.query.get(request.json['data_id'])
+        data = {}
+        if 'data' in request.json:
+            for key in patient.get_object().keys():
+                if key in request.json['data']:
+                    data[key] = patient.get_objects[key]
+        else:
+            data = patient.get_object()
+        return make_response(jsonify({'status': 'success', 'patients': [data]}))
+    patients = Patient.query.all()
+    if 'data' in request.json:
+        if 'medicine' in request.json['data']:
+            patients = [patient for patient in patients if patient.medicine == request.json['data']['medicine']]
+        if 'amount' in request.json['data']:
+            patients = [patient for patient in patients if patient.amount == request.json['data']['amount']]
+        if 'name' in request.json['data']:
+            patients = [patient for patient in patients if patient.name == request.json['data']['name']]
+    patients = [patient.get_object() for patient in patients]
+    return make_response(jsonify({'status': 'success', 'patients': patients}))
 
 
-# {data: {column_names: column_data}, table_name: table, authorized_user: auth_id, row_id: id}
+# {data: {column_names: column_data}, table_name: table, auth_id: auth_id}
 @routes.route('/api/data/insert', methods=['POST'])
 def insert_data():
-    if not check_json(request.json, 'authorized_user', 'data'):
+    if not check_json(request.json, 'auth_id', 'data'):
         abort(400)
-    columns = request.json["data"].keys()
-    values = list(request.json["data"].values())
-    query_dict = {"command":"insert","columns":columns,"values":values,
-                  "table_name":request.json["table_name"], 
-                  "row_id":request.json["row_id"],
-                  "authorized_user":request.json["authorized_user"]}
-    SQL_query,SQL_values = craftQuery(query_dict)
-    return SQL_query
+    patient = Patient(request.json['data']['name'], request.json['auth_id'], request.json['data']['medicine'], request.json['data']['amount'])
+    db_session.add(patient)
+    db_session.commit()
+    return make_response(jsonify({'data_id': patient.data_id, 'auth_id': patient.auth_id, 'status': 'success'}))
 
-# {row_id: id, table_name: table}
-@routes.route('/api/data/delete', methods=['PUT'])
+# {data_id: id, table_name: table}
+@routes.route('/api/data/delete', methods=['POST'])
 def delete_data():
-    if not check_json(request.json, 'row_id'):
+    if not check_json(request.json, 'data_id'):
         abort(400)
-    query_dict = dict(request.json)
-    query_dict["command"] = "delete"
-    #the value returned here is a single item list containing the row_id
-    SQL_query,SQL_values = craftQuery(query_dict)
-    return SQL_query
+    policy_bitwise = '000000'
+    policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
+    if policy:
+        policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
+
+    # Needs authorization
+    if int(str(policy_bitwise)[2]):
+        # Build query to keep in table
+        query_dict = dict(request.json)
+        query_dict["command"] = "delete"
+        # the value returned here is a single item list containing the data_id
+        SQL_query,SQL_values = craftQuery(query_dict)
+        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
+        db_session.add(pending_policy)
+        db_session.commit()
+
+        print("NEEDS AUTH")   
+        return make_response(jsonify({'status': 'pending'}))
+
+    # Needs notify
+    if int(str(policy_bitwise)[3]):
+        print("NEEDS NOTIFY")
+
+    # Go ahead and delete
+    patient = Patient.query.filter(Patient.data_id == request.json['data_id']).delete()
+    db_session.commit()
+    return make_response(jsonify({'status': 'success'}))
 
 @routes.route('/api/data/view_history', methods=[''])
 def view_data_history():    
@@ -202,8 +300,9 @@ def send_auth_request():
 
 @routes.route('/api/dispatch/receive', methods=['POST'])
 def get_auth_update():
-    if not check_json(request.json, insert_Relevant_Criteria_Here):
-        abort(400)
+    #if not check_json(request.json):
+    #    abort(400)
+    print(request.json)
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
     uuid = (request.json['approval_request'])['uuid']
     auth_result=(request.json['success'])
