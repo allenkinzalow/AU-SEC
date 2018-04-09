@@ -20,6 +20,7 @@ class Patient(Base):
 		return {
 			'data_id': self.data_id,
 			'name': self.name,
+			'auth_id': self.auth_id,
 			'medicine': self.medicine,
 			'amount': self.amount,
 		}
