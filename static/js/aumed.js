@@ -267,6 +267,8 @@ AUMed = {
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
 
+                M.AutoInit();
+
                 $(document).on('click', '.btn-delete-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
                     console.log(id);
