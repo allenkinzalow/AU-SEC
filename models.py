@@ -29,15 +29,6 @@ class Patient(Base):
 			'amount': self.amount
 		}
 
-	def to_json(self):
-		return {
-			'data_id': self.data_id,
-			'name': self.name,
-			'auth_id': self.auth_id,
-			'medicine': self.medicine,
-			'amount': self.amount,
-		}
-
 
 class Authorizer_User(Base):
 	__tablename__ = 'auth_users'
@@ -112,6 +103,7 @@ class Pending_Policy(Base):
 		self.expiration = expiration
 		self.auth_group_id = auth_group_id
 
+
 class Group(Base):
 	__tablename__ = 'groups'
 	group_id = Column(String(16), primary_key=True)
@@ -140,30 +132,30 @@ class History(Base):
 	old_value = Column(String(64))
 	new_value = Column(String(64))
 	time_stamp = Column(DateTime())
-	column = Column(String(255))
-	table = Column(String(255))
+	column_name = Column(String(255))
+	table_name = Column(String(255))
 	auth_id = Column(String(16))
 
 	def __init__(self, data_id=None, operation=None, old_value=None, new_value=None, 
-		time_stamp=None, column=None, table=None, auth_id=None):
+		time_stamp=None, column_name=None, table_name=None, auth_id=None):
 		self.data_id = data_id
 		self.operation = operation
 		self.old_value = old_value
 		self.new_value = new_value
 		self.time_stamp = time_stamp
-		self.column = column
-		self.table = table
+		self.column_name = column
+		self.table_name = table
 		self.auth_id = auth_id
 
-	def to_json(self):
+	def get_object(self):
 		return {
 			"data_id": self.data_id,
 			"operation": self.operation,
 			"old_value": self.old_value,
 			"new_value": self.new_value,
 			"time_stamp": self.time_stamp,
-			"column": self.column,
-			"table": self.table,
+			"column": self.column_name,
+			"table": self.table_name,
 			"auth_id": self.auth_id,
 		}
 
