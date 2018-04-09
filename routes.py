@@ -158,7 +158,7 @@ def get_policies():
 
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
-def create_pending_policy(policy_id, expiration, sql_query):
+def create_pending_policy(policy_id, sql_query, expiration):
     auth_group_id = generate_uuid()
     pending_policy = Pending_Policy(policy_id, sql_query, expiration, auth_group_id)
     db_session.add(pending_policy)
