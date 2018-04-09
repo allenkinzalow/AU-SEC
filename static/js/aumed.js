@@ -5,9 +5,6 @@ AUMed = {
         AUMed.UI.patients.open();
         AUMed.UI.timeline.open();
     },
-    loadColumnPoliciesForUser: function(auth_id, columnName) {
-        AUMed.UI.policies.populate(auth_id, columnName);
-    },
     UI: {
         nav: {
             setup: function() {
@@ -29,23 +26,25 @@ AUMed = {
                     this._patients.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#patient_entry_template').html(), {
                             id: patient.data_id,
-                            name: patient.name
+                            auth_id: patient.auth_id,
+                            name: patient.name,
                         });
                     }, "")
                 );
 
                 $(document).on('click', '.btn-medicine-policy', function () {
-                    var id = $(this).parents('li').first().data('id');
+                    var id = $(this).parents('li').first().data('auth_id');
                     console.log(id);
-                    AUMed.loadColumnPoliciesForUser(id, 'medicine')
+                    AUMed.UI.policies.open(id, 'medicine');
                 });
 
                 $(document).on('click', '.btn-amount-policy', function () {
-                    AUMed.loadColumnPoliciesForUser('12345', 'amount')
+                    var id = $(this).parents('li').first().data('auth_id');
+                    console.log(id);
+                    AUMed.UI.policies.open(id, 'amount');
                 });
 
                 M.AutoInit();
-                
             },
             open: function() {
                 var self = this;
@@ -116,7 +115,7 @@ AUMed = {
         },
         policies: {
             _policies: [],
-            populate: function(auth_id, columnName) {                
+            populate: function() {                
                 $('#policies_table').html(
                     this._policies.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
@@ -131,12 +130,17 @@ AUMed = {
                 instance = M.Modal.init(elem, );
                 instance.open();
             },
-            open: function() {
+            open: function(auth_id, column_name) {
                 var self = this;
                 AUMed.Util.api({
                     url: 'policies/get_policies',
+                    data: {
+                        'column_names': [column_name],
+                        'auth_ids': [auth_id]
+                    },
                     callback: (data) => { 
                         data.forEach(d => {
+                            console.log(d);
                             self._policies.push(new AUMed.Schema.Policy(d));
                         });
                         self.populate();
