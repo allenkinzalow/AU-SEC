@@ -196,9 +196,19 @@ def update_data():
     if int(str(policy_bitwise)[0]):
         if not 'table_name' in request.json:
             request.json['table_name'] = DEFAULT_DATA_TABLE
+        columns, values = [], []
+        for i, k in request.json['data'].items():
+            if i in ['medicine', 'name']:
+                columns.append(i)
+                values.append(str(k))
+            if i in ['amount']:
+                columns.append(i)
+                values.append(int(k))
+        if not columns or not values:
+            abort(400, {'message': 'No correct update keys given (medicine, amount, name)'})
         query_dict = {"command":"update","data_id":request.json["data_id"], "table_name":request.json["table_name"],
-                      "columns":request.json["data"].keys(),
-                      "values":list(request.json["data"].values())}
+                      "columns":columns,
+                      "values":values}
         SQL_query = craftQuery(query_dict)    
         print(SQL_query)
         

@@ -17,7 +17,7 @@ def craftQuery(dataDict):
         table_name = dataDict["table_name"]
     row_ID = dataDict["data_id"]
     if "columns" in dataDict:
-    	column_names = dataDict["columns"]
+        column_names = dataDict["columns"]
     else:
         column_names = []
     query = """ """
