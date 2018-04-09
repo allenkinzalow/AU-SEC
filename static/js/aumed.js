@@ -25,11 +25,10 @@ AUMed = {
         patients: {
             _patients: [],
             populate: function() {
-                // todo: use API instead of hardcoding.
                 $('#patients_table').html(
                     this._patients.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#patient_entry_template').html(), {
-                            id: patient.auth_id,
+                            id: patient.data_id,
                             name: patient.name
                         });
                     }, "")

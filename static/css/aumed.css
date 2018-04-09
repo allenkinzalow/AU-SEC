@@ -65,11 +65,11 @@ nav .brand-logo {
 
 /* label color */
 .input-field label {
-    color: #2196F3 !important;
+    color: #03244d  !important;
 }
 /* label focus color */
 .input-field input[type=text]:focus + label {
-    color: #2196F3 !important;
+    color: #03244d  !important;
 }
 /* Override input color scheme */
 input:not([type]):focus:not([readonly]), 
@@ -85,14 +85,14 @@ input[type=tel]:not(.browser-default):focus:not([readonly]),
 input[type=number]:not(.browser-default):focus:not([readonly]), 
 input[type=search]:not(.browser-default):focus:not([readonly]), 
 textarea.materialize-textarea:focus:not([readonly]) {
-    border-bottom: 1px solid #2196F3 !important;
-    box-shadow: 0 1px 0 0 #2196F3 !important;
+    border-bottom: 1px solid #03244d  !important;
+    box-shadow: 0 1px 0 0 #03244d  !important;
 }
 .dropdown-content li>a, .dropdown-content li>span {
-    color: #2196F3 !important;
+    color: #03244d  !important;
 }
 .select-wrapper input.select-dropdown:focus {
-    border-bottom: 1px solid #2196F3 !important;
+    border-bottom: 1px solid #03244d  !important;
 }
 
 .blue {
