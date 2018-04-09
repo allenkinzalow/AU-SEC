@@ -45,7 +45,7 @@ def edit_user():
     return make_response(jsonify({"auth_id": user.auth_id, "status": "success"}), 200)
 
 # {name: name}
-@routes.route('/api/auth_users/get_user', methods=['GET'])
+@routes.route('/api/auth_users/get_user', methods=['POST'])
 def get_user():
     if not check_json(request.json, 'name'):
         abort(400, {'message': 'Essential json keys not found (name)'})
@@ -120,7 +120,7 @@ def edit_policy():
     return make_response(jsonify({'policy_ids': request.json['policy_ids'], 'status': 'success'}), 200)
 
 # {policy_ids: [id1, id2, ...], auth_ids: [id1, id2, ...], data_ids: [id1, id2, ...], column_names: [column1, column2, ...]}
-@routes.route('/api/policies/get_policies', methods=['GET'])
+@routes.route('/api/policies/get_policies', methods=['POST'])
 def get_policies():
     if 'policy_ids' in request.json:
         policies = Policy.query.filter(Policy.policy_id.in_(request.json['policy_ids'])).all()
@@ -170,11 +170,11 @@ def update_data():
     if 'name' in request.json['data']:
         patient.name = request.json['data']['name']
     if 'medicine' in request.json['data']:
-        patient.name = request.json['data']['medicine']
+        patient.medicine = request.json['data']['medicine']
     if 'amount' in request.json['data']:
-        patient.name = request.json['data']['amount']
-
-    return make_response(jsonify({'query': SQL_query, 'status': 'success'}))
+        patient.amount = request.json['data']['amount']
+    db_session.commit()
+    return make_response(jsonify({'patient': patient.get_object(), 'status': 'success'}))
 
 # {data_id: id, table_name: table, data: {column_name: "", }}
 @routes.route('/api/data/select', methods=['POST'])
