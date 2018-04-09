@@ -145,25 +145,36 @@ def get_policies():
         policies = [policy.get_object() for policy in policies]
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
+def create_pending_policy(policy_id, expiration, sql_query):
+
+    auth_group_id = generate_uuid()
+    pending_policy = Pending_Policy(policy_id, sql_query, expiration, auth_group_id)
+    db_session.add(pending_policy)
+    users = Group.query.filter(Group.group_id == auth_group_id).all()
+    for user in users:
+        pending_auth = Pending_Auth(user.auth_id, auth_group_id, None)
+        db_session.add(pending_auth)
+    db_session.commit()
+
+
 #{data: {column_names: column_data}, table_name: table, data_id: id}
 @routes.route('/api/data/update', methods=['POST'])
 def update_data():
     if not check_json(request.json, 'data_id', 'data'):
         abort(400, {'message': 'Essential json keys not found (data_id, data)'})
-    if not check_json(request.json, 'data_id'):
-        abort(400)
     policy_bitwise = '000000'
     policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
     if policy:
         policy_bitwise = "{0:b}".format(policy.policy_bitwise).zfill(6)
     if int(str(policy_bitwise)[0]):
+        if not 'table_name' in request.json:
+            request.json['table_name'] = app.config['DEFAULT_DATA_TABLE']
         query_dict = {"command":"update","data_id":request.json["data_id"], "table_name":request.json["table_name"],
                       "columns":request.json["data"].keys(),
                       "values":list(request.json["data"].values())}
         SQL_query = craftQuery(query_dict)    
-        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
-        db_session.add(pending_policy)
-        db_session.commit()
+        
+        create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
 
         print("NEEDS AUTH")   
         return make_response(jsonify({'status': 'pending'}))
@@ -194,6 +205,8 @@ def select_data():
         query_dict = {"command":"select"}
         if "data" in request.json:
             query_dict = {"columns":request.json["data"].keys()}
+        if not 'table_name' in request.json:
+            request.json['table_name'] = app.config['DEFAULT_DATA_TABLE']
         query_dict["table_name"] = request.json["table_name"]
         if 'data_id' in request.json:
             query_dict["data_id"] = request.json["data_id"]
@@ -202,9 +215,7 @@ def select_data():
         #the value returned here is a single item list containing the data_id
         SQL_query = craftQuery(query_dict)
         
-        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
-        db_session.add(pending_policy)
-        db_session.commit()
+        create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
         print("NEEDS AUTH")
         return make_response(jsonify({'status': 'pending'}))
     
@@ -260,9 +271,7 @@ def delete_data():
         query_dict["command"] = "delete"
         # the value returned here is a single item list containing the data_id
         SQL_query,SQL_values = craftQuery(query_dict)
-        pending_policy = Pending_Policy(policy.policy_id, SQL_query, policy.expiration, policy.group_id)
-        db_session.add(pending_policy)
-        db_session.commit()
+        create_pending_policy(policy.policy_id, SQL_query, policy.expiration)
 
         print("NEEDS AUTH")   
         return make_response(jsonify({'status': 'pending'}))

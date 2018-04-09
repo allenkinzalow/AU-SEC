@@ -112,6 +112,7 @@ class Pending_Policy(Base):
 		self.expiration = expiration
 		self.auth_group_id = auth_group_id
 
+
 class Group(Base):
 	__tablename__ = 'groups'
 	group_id = Column(String(16), primary_key=True)
