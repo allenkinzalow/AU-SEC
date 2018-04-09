@@ -24,17 +24,18 @@ def craftQuery(dataDict):
          values = dataDict["values"]
          query += "UPDATE " + table_name + " SET"
          for c,item in enumerate(column_names):
-             query += " " + item + "="
+             query += " " + item + "=" + values[c]
              
-             if isinstance(values[c],int):
-                 query+= "%d"
-             elif isinstance(values[c],str):
-                 query+= "%s"
+             #if isinstance(values[c],int):
+             #    query+= "%d"
+             #elif isinstance(values[c],str):
+             #    query+= "%s"
              if c < len(column_names) - 1:
                  query+= ", "
-         query += " WHERE id=%s"""
-         values.append(row_ID)
-         return query,values
+         query += " WHERE id=" + row_ID
+         #values.append(row_ID)
+         #return query,values
+         return query
     elif command == "select":
          query = "SELECT "
          if column_names == []:
@@ -44,8 +45,8 @@ def craftQuery(dataDict):
                  query += item
                  if c < len(column_names) - 1:
                      query += ", "
-         query += " FROM " + table_name + " WHERE id = %s"
-         return query,[row_ID]
+         query += " FROM " + table_name + " WHERE id = " + row_ID
+         return query
     elif command == "insert":
          auth_ID = dataDict["authorized_user"] 
          values = dataDict["values"]
