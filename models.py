@@ -147,7 +147,7 @@ class History(Base):
 		self.table = table
 		self.auth_id = auth_id
 
-	def to_object(self):
+	def get_object(self):
 		return {
 			"data_id": self.data_id,
 			"operation": self.operation,

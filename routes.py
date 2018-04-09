@@ -90,17 +90,20 @@ def create_policy():
         policy = Policy(request.json['data_id'], request.json['authorizers'], group_id, request.json['column_name'], request.json['table_name'], request.json['expiration'], request.json['policy_bitwise'])
         db_session.add(policy)
         policy_ids.append(policy.policy_id)
-        group_ids.append(group_id)
     else:
+        group_id = create_auth_group(request.json['authorizers'])
         for col in Patient.__table__.columns.keys():
-            group_id = create_auth_group(request.json['authorizers'])
             policy = Policy(request.json['data_id'], request.json['authorizers'], group_id, col, request.json['table_name'], request.json['expiration'], request.json['policy_bitwise'])
             db_session.add(policy)
             policy_ids.append(policy.policy_id)
-            group_ids.append(group_id)
+
+    group_members = []
+    for auth_id in request.json['authorizers']:
+        auth_user = Authorizer_User.query.get(auth_id)
+        group_members.append(auth_user.get_object())
 
     db_session.commit()
-    return make_response(jsonify({'policy_ids': policy_ids, 'group_ids': group_ids, 'status': 'success'}), 200)
+    return make_response(jsonify({'policy_ids': policy_ids, 'group_id': group_id, 'group_members': group_members, 'status': 'success'}), 200)
 
 # {policy_ids: [id1, id2, ...], authorizers: [id1, id2, ...], column_name: name, expiration: datetime, policy_bitwise: <6 bit integer>}
 @routes.route('/api/policies/edit_policy', methods=['POST'])
@@ -310,7 +313,7 @@ def get_auth_update():
         if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
             query = Pending_Policy.query.filter_by(Pending_Auth.group_id == pending_auth.group_id)
             Patient.query.execute(query.command)
-    else if status == 'denied':
+    elif status == 'denied':
         # find pending policy and drop
         Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
         Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()
