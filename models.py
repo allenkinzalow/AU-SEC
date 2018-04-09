@@ -132,3 +132,38 @@ class Pending_Auth(Base):
 		self.group_id = group_id
 		self.comms_info = comms_info
 
+class History(Base):
+	__tablename__ = 'history'
+	history_id = Column(String(16), primary_key=True)
+	data_id = Column(String(16))
+	operation = Column(String(16))
+	old_value = Column(String(64))
+	new_value = Column(String(64))
+	time_stamp = Column(DateTime())
+	column = Column(String(255))
+	table = Column(String(255))
+	auth_id = Column(String(16))
+
+	def __init__(self, data_id=None, operation=None, old_value=None, new_value=None, 
+		time_stamp=None, column=None, table=None, auth_id=None):
+		self.data_id = data_id
+		self.operation = operation
+		self.old_value = old_value
+		self.new_value = new_value
+		self.time_stamp = time_stamp
+		self.column = column
+		self.table = table
+		self.auth_id = auth_id
+
+	def to_json(self):
+		return {
+			"data_id": self.data_id,
+			"operation": self.operation,
+			"old_value": self.old_value,
+			"new_value": self.new_value,
+			"time_stamp": self.time_stamp,
+			"column": self.column,
+			"table": self.table,
+			"auth_id": self.auth_id,
+		}
+
