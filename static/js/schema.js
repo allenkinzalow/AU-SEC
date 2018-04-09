@@ -5,6 +5,7 @@ AUMed.Schema = {
     Patient: function(data) {
         this.name = data.name;
         this.auth_id = data.auth_id;
+        this.data_id = data.data_id;
         this.medicine = data.medicine;
         this.amount = parseInt(data.amount || 0);
 

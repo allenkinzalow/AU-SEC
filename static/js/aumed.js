@@ -116,13 +116,7 @@ AUMed = {
         },
         policies: {
             _policies: [],
-            populate: function(auth_id, columnName) {
-                this._policies = [];
-
-                // todo: use API instead of hardcoding.s
-                this._policies.push(new AUMed.Schema.Policy({policy_id: "12345", group_id: "93939"}));
-                this._policies.push(new AUMed.Schema.Policy({policy_id: "12346", group_id: "21919"}));
-                
+            populate: function(auth_id, columnName) {                
                 $('#policies_table').html(
                     this._policies.reduce(function(str, patient) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
@@ -136,7 +130,19 @@ AUMed = {
                 elem = document.querySelector('#dataPolicyModal');
                 instance = M.Modal.init(elem, );
                 instance.open();
-            }
+            },
+            open: function() {
+                var self = this;
+                AUMed.Util.api({
+                    url: 'policies/get_policies',
+                    callback: (data) => { 
+                        data.forEach(d => {
+                            self._policies.push(new AUMed.Schema.Policy(d));
+                        });
+                        self.populate();
+                    }
+                });
+            },
         },
     },
 };
