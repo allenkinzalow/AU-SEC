@@ -340,11 +340,11 @@ def get_auth_update():
         # find pending policy and drop for now
         Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
         Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()  
-    auth_result=(request.json['success'])
+    
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
     ##Similar to send_auth_req, probably aren't going to be returning the uuid/auth_result, just placeholding for now.
     db_session.commit()
-    return uuid, auth_result
+    return make_response(jsonify({'uuid': uuid, 'status': 'success'}))
 
 @routes.route('/api/history/<data_id>', methods=['GET'])
 def get_history(data_id):
