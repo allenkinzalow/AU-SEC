@@ -52,9 +52,11 @@ AUMed = {
                 AUMed.Util.api({
                     url: 'patients',
                     callback: (data) => { 
-                        data.forEach(d => {
-                            self._patients.push(new AUMed.Schema.Patient(d));
-                        });
+                        if (!data['error']) {
+                            data.forEach(d => {
+                                self._patients.push(new AUMed.Schema.Patient(d));
+                            });
+                        }
                         self.populate();
                     }
                 });
@@ -115,22 +117,28 @@ AUMed = {
         },
         policies: {
             _policies: [],
-            populate: function(column_name) {                
+            populate: function(column_name) {
+                this._policies = this._policies.filter(p => p.policy_bitwise == 0);
                 updatePolicies = this._policies.filter(p => p.bit_test(6) || p.bit_test(5));
                 deletePolicies = this._policies.filter(p => p.bit_test(4) || p.bit_test(3));
                 selectPolicies = this._policies.filter(p => p.bit_test(2) || p.bit_test(1));
+
                 $('#select_policies_table').html(
                     updatePolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: policy.policy_id,
+                            auth: policy.bit_test(6),
+                            notify: policy.bit_test(5),
                         });
                     }, "")
                 );
-
+                
                 $('#delete_policies_table').html(
                     deletePolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: policy.policy_id,
+                            auth: policy.bit_test(4),
+                            notify: policy.bit_test(3),
                         });
                     }, "")
                 );
@@ -139,9 +147,16 @@ AUMed = {
                     selectPolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: policy.policy_id,
+                            auth: policy.bit_test(2),
+                            notify: policy.bit_test(1),
                         });
                     }, "")
                 );
+
+                this._policies.forEach(p => {
+                    notify 
+                    $("#policy_type_" + p.id + " select").val("val2");
+                });
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
 
@@ -168,7 +183,7 @@ AUMed = {
                     },
                     callback: (data) => { 
                         allPolicies = data['policies'];
-                        allPolicies.forEach(p => {
+                        (allPolicies || []).forEach(p => {
                             console.log(p);
                             self._policies.push(new AUMed.Schema.Policy(p));
                         });

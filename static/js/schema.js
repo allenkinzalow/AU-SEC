@@ -19,7 +19,7 @@ AUMed.Schema = {
         this.table_name = data.table_name;
         this.expiration = data.expiration;
         this.policy_bitwise = data.policy_bitwise;
-        //this.group_members
+        this.group_members = data.group_members;
 
         this.update = function() {
 
