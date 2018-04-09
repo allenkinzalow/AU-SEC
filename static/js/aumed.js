@@ -105,9 +105,18 @@ AUMed = {
                 initializeTimeline();
                 M.AutoInit();
             },
-            open: function() {
+            open: function(data_id) {
+                var self = this;
                 $('#timeline_section').show();
-                this.populate();
+                AUMed.Util.api({
+                    url: 'history/' + data_id,
+                    callback: (data) => { 
+                        data.forEach(d => {
+                            self._patients.push(new AUMed.Schema.History(d));
+                        });
+                        self.populate();
+                    }
+                });
             },
             close: function() {
                 $('#timeline_section').hide();

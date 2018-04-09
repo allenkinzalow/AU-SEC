@@ -21,7 +21,7 @@ def index():
 @routes.route('/api/patients', methods=['GET'])
 def get_all_patients():
     patients = Patient.query.all()
-    return jsonify([p.to_json() for p in patients])
+    return jsonify([p.get_object() for p in patients])
 
 # {preferred_comms: <integer>{1,2,3}, contact_info: <string>, name: name}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
@@ -328,7 +328,7 @@ def get_auth_update():
     db_session.commit()
     return uuid, auth_result
 
-@routes.route('/api/history/<int:data_id>', methods=['GET'])
+@routes.route('/api/history/<data_id>', methods=['GET'])
 def get_history(data_id):
     entries = History.query.filter(History.data_id==data_id)
     return jsonify([e.get_object() for e in entries])
