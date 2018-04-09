@@ -39,9 +39,6 @@
                         <a href="/">Home</a>
                     </li>
                     <li>
-                        <a href="/#timelog">Timelog</a>
-                    </li>
-                    <li>
                         <a id="user-label" class="dropdown-trigger" data-target="settings_dropdown">
                             <i class="material-icons right">arrow_drop_down</i>
                         </a>
@@ -106,8 +103,8 @@
 
     <!-- Re-usable scripts. -->
     <script type="text/html" id="patient_entry_template">
-    <li data-id="%id%" data-auth-id="%auth_id%">
-        <div class="collapsible-header">%name%</div>
+    <li data-id="%id%" class="searchable" data-auth-id="%auth_id%">
+        <div class="collapsible-header search-value">%name%</div>
         <div class="collapsible-body">
             <div class="row row-data-field">
                 <div class="input-field col s5">

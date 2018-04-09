@@ -41,6 +41,20 @@ AUMed = {
                     .attr('selected', 'selected')
                 });
 
+                $('.search-input input').on('input', function(e) {
+                    var value = $(this).val().toLowerCase().trim();
+                    if(value == "")
+                        $('.searchable').show();
+                    else
+                        $('.searchable .search-value').each(function(index) {
+                            var ele = $(this);
+                            if(!ele.html().toLowerCase().includes(value))
+                                ele.parent().hide();
+                            else
+                                ele.parent().show();
+                        });
+                });
+
                 $(document).on('click', '.btn-medicine-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
                     AUMed.UI.policies.open(id, 'medicine');
@@ -252,6 +266,8 @@ AUMed = {
                 });
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
+
+                M.AutoInit();
 
                 $(document).on('click', '.btn-delete-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
