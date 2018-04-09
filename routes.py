@@ -4,6 +4,7 @@ from dispatch.Dispatcher import Dispatcher
 from crafter import craftQuery
 from database import db_session
 from config import DEFAULT_DATA_TABLE
+
 routes = Blueprint('routes', __name__, template_folder='templates')
 
 def check_json(json, *params):
@@ -322,7 +323,9 @@ def get_auth_update():
     receive_uuid = request.json['uuid']
     receive_auth_id = request.json['approval_request']['transaction']['hidden_details']['auth_id']
     status = request.json['status'].strip()
-    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id).filter_by(Pending_Auth.comms_info == str(receive_uuid)).first()
+    pending_auths = Pending_Auth.query.filter(Pending_Auth.auth_id == receive_auth_id).all()
+    pending_auth = [pending_auth for pending_auth in pending_auths if pending_auth.comms_info == str(receive_uuid)][0]
+    print(pending_auth)
     if status == 'approved':
         db_session.delete(pending_auth)
         if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
