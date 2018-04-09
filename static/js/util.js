@@ -39,4 +39,7 @@ AUMed.Util = {
     capitalize: function(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
+    getFormattedDate(date) {
+        return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+    }
 };

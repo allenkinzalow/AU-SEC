@@ -41,6 +41,20 @@ AUMed = {
                     .attr('selected', 'selected')
                 });
 
+                $('.search-input input').on('input', function(e) {
+                    var value = $(this).val().toLowerCase().trim();
+                    if(value == "")
+                        $('.searchable').show();
+                    else
+                        $('.searchable .search-value').each(function(index) {
+                            var ele = $(this);
+                            if(!ele.html().toLowerCase().includes(value))
+                                ele.parent().hide();
+                            else
+                                ele.parent().show();
+                        });
+                });
+
                 $(document).on('click', '.btn-medicine-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
                     AUMed.UI.policies.open(id, 'medicine');
@@ -93,13 +107,15 @@ AUMed = {
             _history: [],
             populate: function() {
                 var html = this._history.reduce(function(str, item) {
+                    var action = item.operation == "INSERT" ? "Created" : "Updated";
+                    var capitalField = AUMed.Util.capitalize(item.field);
                     return str +  AUMed.Util.template($('#timeline_entry_template').html(), {
                         id: item.data_id,
                         color: "green",
-                        icon: "lock",
-                        title: item.field + " " + item.operation,
-                        action: "this is a test!",
-                        date: Date.now()
+                        icon: item.operation == "INSERT" ? "add" : "lock",
+                        title: capitalField + " " + action,
+                        action: item.operation == "INSERT" ? action + " inserted with a value of " + item.new_value : action + " was changed from " + item.old_value + " to " + item.new_value,
+                        date: AUMed.Util.getFormattedDate(new Date(item.time_stamp))
                     });
                 }, "");
                 if(html == "")
@@ -115,8 +131,9 @@ AUMed = {
                     url: 'history/' + data_id,
                     callback: (data) => { 
                         data.forEach(d => {
-                            self._patients.push(new AUMed.Schema.History(d));
+                            self._history.push(new AUMed.Schema.History(d));
                         });
+                        self._history = self._history.reverse();
                         self.populate();
                     }
                 });
@@ -143,19 +160,21 @@ AUMed = {
                     }, "")
                 );
 
+                M.AutoInit();
+
                 var chipData = {};
                 AUMed.UI.patients._patients.forEach((p) => {
                     p.image = '';
                     p.tag = p.name;
                     chipData[p.name] = null;
                 });
-                $('.chips-autocomplete').chips({
+               /* $('.chips-autocomplete').chips({
                     autocompleteOptions: {
                       data: chipData,
                       limit: Infinity,
                       minLength: 1
                     }
-                  });
+                });*/
 
                 this.updatePolicies.forEach(p => {
                     var selectedVal = p.bit_test(6) ? "2" : "1"
@@ -164,10 +183,19 @@ AUMed = {
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
                     
+                    var group_data = {};
                     p.group_members.forEach(m => {
                         m.image = '';
                         m.tag = m.name;
-                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                        group_data[m.name] = m;
+                    });
+                    $("#authy_id_" + p.policy_id).chips({
+                        autocompleteOptions: {
+                          data: chipData,
+                          limit: Infinity,
+                          minLength: 1
+                        },
+                        data: group_data
                     });
                 });
                 
@@ -187,10 +215,20 @@ AUMed = {
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
 
+
+                    var group_data = {};
                     p.group_members.forEach(m => {
                         m.image = '';
                         m.tag = m.name;
-                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                        group_data[m.name] = m;
+                    });
+                    $("#authy_id_" + p.policy_id).chips({
+                        autocompleteOptions: {
+                          data: chipData,
+                          limit: Infinity,
+                          minLength: 1
+                        },
+                        data: group_data
                     });
                     
                 });
@@ -211,22 +249,32 @@ AUMed = {
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
                     
+                    var group_data = {};
                     p.group_members.forEach(m => {
                         m.image = '';
                         m.tag = m.name;
-                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                        group_data[m.name] = m;
+                    });
+                    $("#authy_id_" + p.policy_id).chips({
+                        autocompleteOptions: {
+                          data: chipData,
+                          limit: Infinity,
+                          minLength: 1
+                        },
+                        data: group_data
                     });
                 });
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
+
+                M.AutoInit();
 
                 $(document).on('click', '.btn-delete-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
                     console.log(id);
                     AUMed.UI.policies.open(id, 'amount');
                 });
-                
-                M.AutoInit();
+
                 elem = document.querySelector('#dataPolicyModal');
                 instance = M.Modal.init(elem, );
                 instance.open();

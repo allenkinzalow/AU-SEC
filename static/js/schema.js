@@ -10,7 +10,7 @@ AUMed.Schema = {
         this.amount = parseInt(data.amount || 0);
 
         this.update = function() {
-            
+
         };
     },
     Policy: function(data) {
@@ -23,6 +23,19 @@ AUMed.Schema = {
         this.policy_bitwise = data.policy_bitwise;
         this.group_members = data.group_members;
 
+        this.create = function(data) {
+            AUMed.Util.api({
+                url: 'policies/create_policy',
+                type: 'POST',
+                data: {
+                    data
+                },
+                callback: (data) => { 
+                    return data;
+                }
+            });
+        };
+
         this.update = function() {
 
         };
@@ -33,11 +46,12 @@ AUMed.Schema = {
     },
     History: function(data) {
         this.data_id = data.data_id;
-        this.operation = data.op;
-        this.old_value = data.old_Value;
+        this.operation = data.operation;
+        this.time_stamp = data.time_stamp;
+        this.old_value = data.old_value;
         this.new_value = data.new_value;
         this.field = data.column;
-        this.auth = data.auth;
+        this.auth_id = data.auth_id;
 
         this.revert = function() {};
     },
