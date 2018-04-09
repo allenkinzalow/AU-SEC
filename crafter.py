@@ -33,7 +33,7 @@ def craftQuery(dataDict):
              #    query+= "%s"
              if c < len(column_names) - 1:
                  query+= ", "
-         query += " WHERE id=" + row_ID
+         query += " WHERE data_id=" + row_ID
          #values.append(row_ID)
          #return query,values
          return query
