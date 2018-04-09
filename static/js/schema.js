@@ -26,5 +26,7 @@ AUMed.Schema = {
         this.new_value = data.new_value;
         this.field = data.column;
         this.auth = data.auth;
+
+        this.revert = function() {};
     },
 };
