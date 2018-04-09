@@ -9,7 +9,9 @@ AUMed.Schema = {
         this.medicine = data.medicine;
         this.amount = parseInt(data.amount || 0);
 
-        this.update = function() {};
+        this.update = function() {
+            
+        };
     },
     Policy: function(data) {
         this.policy_id = data.policy_id;

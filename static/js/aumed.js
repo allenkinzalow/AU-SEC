@@ -28,9 +28,19 @@ AUMed = {
                             id: patient.data_id,
                             auth_id: patient.auth_id,
                             name: patient.name,
+                            medicine: patient.medicine,
+                            amount: patient.amount,
                         });
                     }, "")
                 );
+
+                this._patients.forEach(p => {
+                    $("#medicine_type_" + p.auth_id).focus();
+                    $("#medicine_type_" + p.auth_id + " option")
+                    .removeAttr('selected')
+                    .filter('[value=' + p.medicine + "]")
+                    .attr('selected', 'selected')
+                });
 
                 $(document).on('click', '.btn-medicine-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
