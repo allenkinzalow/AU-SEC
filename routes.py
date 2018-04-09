@@ -344,7 +344,7 @@ def get_auth_update():
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
     ##Similar to send_auth_req, probably aren't going to be returning the uuid/auth_result, just placeholding for now.
     db_session.commit()
-    return make_response(jsonify({'uuid': receieve_uuid, 'status': 'success'}))
+    return make_response(jsonify({'uuid': receive_uuid, 'status': 'success'}))
 
 @routes.route('/api/history/<data_id>', methods=['GET'])
 def get_history(data_id):
