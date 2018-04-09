@@ -47,7 +47,7 @@ class Dispatcher():
 
 if __name__ == '__main__':
     import argparse
-    mod_msg=json.load(open("mod_msg.json"))
+    mod_msg=json.load(open("dispatch/mod_msg.json"))
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--uid', '-u', help="The user id", default=mod_msg["user_id"], type=int)
