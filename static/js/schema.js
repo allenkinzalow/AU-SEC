@@ -10,7 +10,7 @@ AUMed.Schema = {
         this.amount = parseInt(data.amount || 0);
 
         this.update = function() {
-            
+
         };
     },
     Policy: function(data) {
@@ -22,6 +22,25 @@ AUMed.Schema = {
         this.expiration = data.expiration;
         this.policy_bitwise = data.policy_bitwise;
         this.group_members = data.group_members;
+
+        this.create = function(data) {
+            AUMed.Util.api({
+                url: 'policies/get_policies',
+                type: 'POST',
+                data: {
+                    'column_names': [column_name],
+                    'auth_ids': [auth_id]
+                },
+                callback: (data) => { 
+                    allPolicies = data['policies'];
+                    (allPolicies || []).forEach(p => {
+                        console.log(p);
+                        self._policies.push(new AUMed.Schema.Policy(p));
+                    });
+                    self.populate(column_name);
+                }
+            });
+        };
 
         this.update = function() {
 
