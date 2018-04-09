@@ -329,8 +329,8 @@ def get_auth_update():
     if status == 'approved':
         db_session.delete(pending_auth)
         if Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
-            query = Pending_Policy.query.filter(Pending_Auth.group_id == pending_auth.group_id)
-            Patient.query.execute(query.command)
+            pending_policy = Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id)
+            db_session.execute(pending_policy.command)
     elif status == 'denied':
         # find pending policy and drop
         Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
