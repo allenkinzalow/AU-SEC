@@ -43,13 +43,11 @@ AUMed = {
 
                 $(document).on('click', '.btn-medicine-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
-                    console.log(id);
                     AUMed.UI.policies.open(id, 'medicine');
                 });
 
                 $(document).on('click', '.btn-amount-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
-                    console.log(id);
                     AUMed.UI.policies.open(id, 'amount');
                 });
 
@@ -168,9 +166,12 @@ AUMed = {
                     .removeAttr('selected')
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
-                    p.image = '';
-                    p.tag = p.name;
-                    M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(p);
+                    
+                    p.group_members.forEach(m => {
+                        m.image = '';
+                        m.tag = m.name;
+                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                    });
                 });
                 
                 $('#delete_policies_table').html(
@@ -188,9 +189,13 @@ AUMed = {
                     .removeAttr('selected')
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
-                    p.image = '';
-                    p.tag = p.name;
-                    M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(p);
+
+                    p.group_members.forEach(m => {
+                        m.image = '';
+                        m.tag = m.name;
+                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                    });
+                    
                 });
 
                 $('#select_policies_table').html(
@@ -202,16 +207,18 @@ AUMed = {
                         });
                     }, "")
                 );
-
                 this.selectPolicies.forEach(p => {
                     var selectedVal = p.bit_test(2) ? "2" : "1"
                     $("#policy_type_" + p.policy_id + " option")
                     .removeAttr('selected')
                     .filter('[value=' + selectedVal + "]")
-                        .attr('selected', 'selected')
-                    p.image = '';
-                    p.tag = p.name;
-                    M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(p);
+                    .attr('selected', 'selected')
+                    
+                    p.group_members.forEach(m => {
+                        m.image = '';
+                        m.tag = m.name;
+                        M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(m);
+                    });
                 });
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
