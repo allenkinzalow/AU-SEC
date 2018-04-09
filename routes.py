@@ -322,7 +322,7 @@ def get_auth_update():
     receive_uuid = request.json['uuid']
     receive_auth_id = request.json['approval_request']['transaction']['hidden_details']['auth_id']
     status = request.json['status'].strip()
-    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id).filter(Pending_Auth.comms_info == str(receive_uuid)).first()
+    pending_auth = Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id).filter_by(Pending_Auth.comms_info == str(receive_uuid)).first()
     if status == 'approved':
         db_session.delete(pending_auth)
         if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
