@@ -353,7 +353,7 @@ def get_history(data_id):
 
 # {data_id: id, table_name: table}
 @routes.route('/api/data/deadman', methods=['POST'])
-def send_dead_man()
+def send_dead_man():
     policy = Policy.query.filter(Policy.data_id == request.json['data_id']).first()
     query_dict = dict(request.json)
     query_dict["command"] = "delete"
