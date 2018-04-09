@@ -3,7 +3,6 @@ AUMed = {
     load: function() {
         AUMed.UI.nav.setup();
         AUMed.UI.patients.open();
-        AUMed.UI.timeline.open();
     },
     UI: {
         nav: {
@@ -54,6 +53,13 @@ AUMed = {
                     AUMed.UI.policies.open(id, 'amount');
                 });
 
+                $(document).on('click', '.btn-timeline-policy', function () {
+                    var id = $(this).parents('li').first().data('id');
+                    console.log(id);
+                    AUMed.UI.patients.close();
+                    AUMed.UI.timeline.open(id);
+                });
+
                 M.AutoInit();
             },
             open: function() {
@@ -88,32 +94,19 @@ AUMed = {
         timeline: {
             _history: [],
             populate: function() {
-                this._history.push(new AUMed.Schema.History({
-                    data_id: "12345", 
-                    op: "update",
-                    old_value: "5",
-                    new_value: "10",
-                    column: "amount",
-                }));
-                this._history.push(new AUMed.Schema.History({
-                    data_id: "12345", 
-                    op: "update",
-                    old_value: "1",
-                    new_value: "5",
-                    column: "amount",
-                }));
-                $('#timeline_table').html(
-                    this._history.reduce(function(str, item) {
-                        return str +  AUMed.Util.template($('#timeline_entry_template').html(), {
-                            id: item.data_id,
-                            color: "green",
-                            icon: "lock",
-                            title: item.field + " " + item.operation,
-                            action: "this is a test!",
-                            date: Date.now()
-                        });
-                    }, "")
-                );
+                var html = this._history.reduce(function(str, item) {
+                    return str +  AUMed.Util.template($('#timeline_entry_template').html(), {
+                        id: item.data_id,
+                        color: "green",
+                        icon: "lock",
+                        title: item.field + " " + item.operation,
+                        action: "this is a test!",
+                        date: Date.now()
+                    });
+                }, "");
+                if(html == "")
+                    html = "No activity found.";
+                $('#timeline_table').html(html);
                 initializeTimeline();
                 M.AutoInit();
             },

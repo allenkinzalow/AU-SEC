@@ -123,7 +123,7 @@ class Pending_Auth(Base):
 
 class History(Base):
 	__tablename__ = 'history'
-	history_id = Column(String(16), primary_key=True)
+	history_id = Column(Integer, primary_key=True, autoincrement=True)
 	data_id = Column(String(16))
 	operation = Column(String(16))
 	old_value = Column(String(64))
