@@ -18,7 +18,7 @@ class Dispatcher():
         hidden_details={}
         hidden_details["auth_id"] = auth_id
 
-            #Package all the mod_msg info into a response and send it on its way
+        #Package all the mod_msg info into a response and send it on its way
         response = self.authy_api.one_touch.send_request(user_id,
                         message,
                         seconds_to_expire=seconds_to_expire,

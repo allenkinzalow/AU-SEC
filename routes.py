@@ -179,17 +179,8 @@ def view_data_history():
 
 @routes.route('/api/dispatch/send')
 def send_auth_request():
-    if not check_json(request.json, insert_Relevant_Criteria_Here):
+    if not check_json(request.json, 'authorization_id', 'authy_user_id', 'message', 'time_Limit', 'details'):
         abort(400)
-    
-    ##authorization_id = ?
-    ##authy_user_id = ?
-    ##message=?
-    ##time_Limit=?
-    ##details={}
-    ####details["Doctor"]=?
-    ####details["Medicine"]=?
-    ####details["Dosage"]=?
     pusher = Dispatcher()
     uuid, authy_auth_id = pusher.oneTouchAuth(authorization_id,authy_user_id,message,time_Limit,details)
     ##uuid and authy likely need to be put into a table. Unfamiliar with db setup so not sure which one.
@@ -197,10 +188,26 @@ def send_auth_request():
 
 @routes.route('/api/dispatch/receive', methods=['POST'])
 def get_auth_update():
-    if not check_json(request.json, insert_Relevant_Criteria_Here):
+    if not check_json(request.json, 'authorization_id', 'uuid'):
         abort(400)
     ##Assuming the POST becomes the request.json. JSON key names are correct in any event.
-    uuid = (request.json['approval_request'])['uuid']
+    receive_uuid = (request.json['approval_request'])['uuid']
+    receive_auth_id = (request.json['approval_request'])['approval_request']['transaction']['hidden_details']['auth_id']
+    receive_pending_group_id = Pending_Auth.query.filter_by(Pending_Auth.Pending_group_id.in_(receive_auth_id)).all()
+    status = request.json['status']
+    if status == 'approved':
+        Pending_Auth.query.filter_by(Pending_Auth.auth_id == receive_auth_id).delete()
+        if Pending_Auth.query.filter_by(Pending_Auth.pending_group_id == receive_pending_group_id).count() == 0:
+
+    else if status == 'denied':
+        # find pending policy and drop
+        Pending_Auth.query.filter_by(Pending_Auth.Pending_group_id == receive_pending_group_id).delete()
+    #else if status == 'expired':
+    else:
+        # find pending policy and drop for now
+        Pending_Auth.query.filter_by(Pending_Auth.Pending_group_id == receive_pending_group_id).delete()
+
+
     auth_result=(request.json['success'])
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
     ##Similar to send_auth_req, probably aren't going to be returning the uuid/auth_result, just placeholding for now.
