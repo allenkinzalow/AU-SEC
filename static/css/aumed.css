@@ -50,6 +50,10 @@ body {
     display: inline-block;
 } */
 
+#policies_table {
+    margin-top: 60px;
+}
+
 /* MATERIALIZE OVERRIDES */
 nav .brand-logo {
     margin-left: 20px;

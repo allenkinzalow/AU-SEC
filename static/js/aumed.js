@@ -38,14 +38,12 @@ AUMed = {
                     }, "")
                 );
 
-                $(document).delegate( '.btn-medicine-policy', 'click', function () {
-                    columnName = 'medicine'
-                    AUMed.loadColumnPoliciesForUser('12345', columnName)
+                $(document).on('click', '.btn-medicine-policy', function () {
+                    AUMed.loadColumnPoliciesForUser('12345', 'medicine')
                 });
 
-                $(document).delegate('.btn-amount-policy', 'click', function () {
-                    columnName = 'amount'
-                    AUMed.loadColumnPoliciesForUser(auth_id, columnName)
+                $(document).on('click', '.btn-amount-policy', function () {
+                    AUMed.loadColumnPoliciesForUser('12345', 'amount')
                 });
                 M.AutoInit();
                 
@@ -131,8 +129,6 @@ AUMed = {
                 instance.open();
             }
         },
-        authorizations: {},
-        timeline: {},
     },
 };
 
