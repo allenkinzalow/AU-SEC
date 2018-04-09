@@ -34,7 +34,7 @@ AUMed = {
                 );
 
                 this._patients.forEach(p => {
-                    $("#medicine_type_" + p.auth_id).focus();
+                    $("#medicine_amount_label_" + p.auth_id).attr('class', 'active');
                     $("#medicine_type_" + p.auth_id + " option")
                     .removeAttr('selected')
                     .filter('[value=' + p.medicine + "]")

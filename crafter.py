@@ -25,7 +25,10 @@ def craftQuery(dataDict):
          values = dataDict["values"]
          query += "UPDATE " + table_name + " SET"
          for c,item in enumerate(column_names):
-             query += " " + item + "=\"" + values[c] +"\""
+             if isinstance(values[c], int):
+                query += " " + item + "=" + str(values[c])
+             else:
+                query += " " + item + "=\"" + values[c] +"\""
              
              #if isinstance(values[c],int):
              #    query+= "%d"
