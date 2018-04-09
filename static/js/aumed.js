@@ -28,9 +28,19 @@ AUMed = {
                             id: patient.data_id,
                             auth_id: patient.auth_id,
                             name: patient.name,
+                            medicine: patient.medicine,
+                            amount: patient.amount,
                         });
                     }, "")
                 );
+
+                this._patients.forEach(p => {
+                    $("#medicine_type_" + p.auth_id).focus();
+                    $("#medicine_type_" + p.auth_id + " option")
+                    .removeAttr('selected')
+                    .filter('[value=' + p.medicine + "]")
+                    .attr('selected', 'selected')
+                });
 
                 $(document).on('click', '.btn-medicine-policy', function () {
                     var id = $(this).parents('li').first().data('auth-id');
@@ -141,12 +151,30 @@ AUMed = {
                         });
                     }, "")
                 );
+
+                var chipData = {};
+                AUMed.UI.patients._patients.forEach((p) => {
+                    p.image = '';
+                    p.tag = p.name;
+                    chipData[p.name] = null;
+                });
+                $('.chips-autocomplete').chips({
+                    autocompleteOptions: {
+                      data: chipData,
+                      limit: Infinity,
+                      minLength: 1
+                    }
+                  });
+
                 this.updatePolicies.forEach(p => {
                     var selectedVal = p.bit_test(6) ? "2" : "1"
                     $("#policy_type_" + p.policy_id + " option")
                     .removeAttr('selected')
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
+                    p.image = '';
+                    p.tag = p.name;
+                    M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(p);
                 });
                 
                 $('#delete_policies_table').html(
@@ -164,6 +192,9 @@ AUMed = {
                     .removeAttr('selected')
                     .filter('[value=' + selectedVal + "]")
                     .attr('selected', 'selected')
+                    p.image = '';
+                    p.tag = p.name;
+                    M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(p);
                 });
 
                 $('#select_policies_table').html(
@@ -182,6 +213,9 @@ AUMed = {
                     .removeAttr('selected')
                     .filter('[value=' + selectedVal + "]")
                         .attr('selected', 'selected')
+                    p.image = '';
+                    p.tag = p.name;
+                    M.Chips.getInstance($("#authy_id_" + p.policy_id)).addChip(p);
                 });
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
