@@ -328,4 +328,4 @@ def get_auth_update():
 @routes.route('/api/history/<int:data_id>', methods=['GET'])
 def get_history(data_id):
     entries = History.query.filter(History.data_id==data_id)
-    return jsonify([e.to_json() for e in entries])
+    return jsonify([e.get_object() for e in entries])
