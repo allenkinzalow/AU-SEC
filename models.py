@@ -16,6 +16,14 @@ class Patient(Base):
 	def get_columns(self):
 		return ['data_id', 'name', ]
 
+	def to_json(self):
+		return {
+			'data_id': self.data_id,
+			'name': self.name,
+			'medicine': self.medicine,
+			'amount': self.amount,
+		}
+
 
 class Authorizer_User(Base):
 	__tablename__ = 'auth_users'

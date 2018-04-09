@@ -42,7 +42,8 @@
 		}
 	};
 
-	$(document).ready(() => {
+	var initialize = function() {
+
 		var verticalTimelines = document.getElementsByClassName("js-cd-timeline"),
 		verticalTimelinesArray = [],
 		scrolling = false;
@@ -68,5 +69,11 @@
 			});
 			scrolling = false;
 		};
+
+	};
+
+	window.initializeTimeline = initialize;
+	$(document).ready(() => {
+		initialize();
 	});
 })();
