@@ -127,13 +127,13 @@ AUMed = {
         policies: {
             _policies: [],
             populate: function(column_name) {
-                this._policies = this._policies.filter(p => p.policy_bitwise == 0);
-                updatePolicies = this._policies.filter(p => p.bit_test(6) || p.bit_test(5));
-                deletePolicies = this._policies.filter(p => p.bit_test(4) || p.bit_test(3));
-                selectPolicies = this._policies.filter(p => p.bit_test(2) || p.bit_test(1));
+                this._policies = this._policies.filter(p => p.policy_bitwise != 0);
+                this.updatePolicies = this._policies.filter(p => p.bit_test(6) || p.bit_test(5));
+                this.deletePolicies = this._policies.filter(p => p.bit_test(4) || p.bit_test(3));
+                this.selectPolicies = this._policies.filter(p => p.bit_test(2) || p.bit_test(1));
 
-                $('#select_policies_table').html(
-                    updatePolicies.reduce(function(str, policy) {
+                $('#update_policies_table').html(
+                    this.updatePolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: policy.policy_id,
                             auth: policy.bit_test(6),
@@ -141,9 +141,16 @@ AUMed = {
                         });
                     }, "")
                 );
+                this.updatePolicies.forEach(p => {
+                    var selectedVal = p.bit_test(6) ? "2" : "1"
+                    $("#policy_type_" + p.policy_id + " option")
+                    .removeAttr('selected')
+                    .filter('[value=' + selectedVal + "]")
+                    .attr('selected', 'selected')
+                });
                 
                 $('#delete_policies_table').html(
-                    deletePolicies.reduce(function(str, policy) {
+                    this.deletePolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: policy.policy_id,
                             auth: policy.bit_test(4),
@@ -151,9 +158,16 @@ AUMed = {
                         });
                     }, "")
                 );
+                this.deletePolicies.forEach(p => {
+                    var selectedVal = p.bit_test(4) ? "2" : "1"
+                    $("#policy_type_" + p.policy_id + " option")
+                    .removeAttr('selected')
+                    .filter('[value=' + selectedVal + "]")
+                    .attr('selected', 'selected')
+                });
 
                 $('#select_policies_table').html(
-                    selectPolicies.reduce(function(str, policy) {
+                    this.selectPolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
                             id: policy.policy_id,
                             auth: policy.bit_test(2),
@@ -162,9 +176,12 @@ AUMed = {
                     }, "")
                 );
 
-                this._policies.forEach(p => {
-                    notify 
-                    $("#policy_type_" + p.id + " select").val("val2");
+                this.selectPolicies.forEach(p => {
+                    var selectedVal = p.bit_test(2) ? "2" : "1"
+                    $("#policy_type_" + p.policy_id + " option")
+                    .removeAttr('selected')
+                    .filter('[value=' + selectedVal + "]")
+                        .attr('selected', 'selected')
                 });
 
                 $('.column-name-header').html(AUMed.Util.capitalize(column_name));
