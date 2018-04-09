@@ -18,6 +18,11 @@ def check_json(json, *params):
 def index():
     return render_template('index.html')
 
+@routes.route('/api/patients', methods=['GET'])
+def get_all_patients():
+    patients = Patient.query.all()
+    return jsonify([p.to_json() for p in patients])
+
 # {preferred_comms: <integer>{1,2,3}, contact_info: <string>, name: name}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
 def create_user():
@@ -74,7 +79,7 @@ def create_policy():
 
     data = Patient.query.get(request.json['data_id'])
     if not data:
-        abort(400, {'message': 'The data_id provided did not return any data'})
+        abort(400, {'message': 'The data_id provided did not return any policies'})
 
     if not 'table_name' in request.json:
         request.json['table_name'] = DEFAULT_DATA_TABLE
@@ -311,3 +316,7 @@ def get_auth_update():
     db_session.commit()
     return uuid, auth_result
 
+@routes.route('/api/history/<int:data_id>', methods=['GET'])
+def get_history(data_id):
+    entries = History.query.filter(History.data_id==data_id)
+    return jsonify([e.to_json() for e in entries])

@@ -22,7 +22,7 @@ def bad_request(error):
 	if 'message' in error.description:
 		response = jsonify({'error': 400, 'message': error.description['message'], 'status': 'error'})
 	else:
-		response = jsonify({'error': 400, 'message': 'Bad request sent to the server'})
+		response = jsonify({'error': 400, 'message': 'Bad request sent to the server', 'status': 'error'})
 	return make_response(response, 400)
 
 @app.teardown_appcontext

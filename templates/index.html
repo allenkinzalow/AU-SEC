@@ -1,97 +1,255 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <!-- CSS -->
+    <link rel="shortcut icon" href="http://www.auburn.edu/template/images/favicon.ico">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/libraries/timeline.css') }}?v=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/aumed.css') }}?v=1.0">
 
     <!-- Javascript -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <script src="{{ url_for('static', filename='js/libraries/timeline.js') }}"></script>
     <script src="{{ url_for('static', filename='js/aumed.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/util.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/schema.js') }}"></script>
     <title>AU Medical Admin</title>
     <base href="/">
-  </head>
+</head>
 
-  <body>
+<body>
+    <ul id="settings_dropdown" class="dropdown-content">
+        <li>
+            <a id="switch_account">Switch Account</a>
+        </li>
+    </ul>
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper blue">
+                <a href="/" class="brand-logo">AU Medical Admin</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li class="active">
+                        <a href="/">Home</a>
+                    </li>
+                    <li>
+                        <a href="/#timelog">Timelog</a>
+                    </li>
+                    <li>
+                        <a id="user-label" class="dropdown-trigger" data-target="settings_dropdown">
+                            <i class="material-icons right">arrow_drop_down</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
 
-        <div class="navbar-fixed">
-            <nav>
-                <div class="nav-wrapper blue">
-                    <a href="/" class="brand-logo">AU Medical Admin</a>
-                    <ul id="nav-mobile" class="right hide-on-med-and-down">
-                        <li class="active"><a href="/">Home</a></li>
-                        <li><a href="/#timelog">Timelog</a></li>
-                        <li><a class="dropdown-button" href="#!" data-beloworigin="true" data-activates="settings_dropdown">Allen Kinzalow<i class="material-icons right">arrow_drop_down</i></a></li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-        <div id="content_area">
-            <div class="row content-area">
-                <div class="col s8">
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">
-                                <span class="card-sub-title">Patients</span>
-                            </span>
-                            <div class="row search">
-                                <div class="search-input input-field col s12">
-                                    <input type="text" id="patients_search" class=" validate">
-                                    <label for="patients_search" class="active">Search Patients</label>
-                                </div>
-                            </div>
-                            <div class="content-container">
-                                <div class="collection">
-                                    <a href="#!" class="collection-item blue-text">Patient 1</a>
-                                    <a href="#!" class="collection-item blue-text">Patient 2</a>
-                                    <a href="#!" class="collection-item blue-text">Patient 3</a>
-                                    <a href="#!" class="collection-item blue-text">Patient 4</a>
-                                </div>
+    <div id="content_area">
+        <div class="row content-area" id="patients_card" style="display: none">
+            <div class="col s8">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <span class="card-sub-title">Patients</span>
+                        </span>
+                        <div class="row search">
+                            <div class="search-input input-field col s12">
+                                <input type="text" id="patients_search" class=" validate">
+                                <label for="patients_search" class="active">Search Patients</label>
                             </div>
                         </div>
-                        <div class="card-action">
-                            <a class="waves-effect waves-light btn blue">Add Patient</a>
+                        <div class="content-container">
+                            <ul class="collapsible" id="patients_table"></ul>
                         </div>
+                    </div>
+                    <div class="card-action">
+                        <a data-target="addPatientModal" class="waves-effect waves-light btn blue modal-trigger">Add Patient</a>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="row content-area">
-                <div class="col s8">
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">
-                                <span class="card-sub-title">Edit Perscriptions</span>
-                            </span>
-                            <div class="content-container">
-                                <div class="info-section-title">Personal</div>
-                                <div class="row">
-                                    <div class="input-field col s6">
-                                        <select id="perscription_med">
-                                            <option value="" disabled selected>Choose the perscription medicine</option>
-                                            <option value="1">Option 1</option>
-                                            <option value="2">Option 2</option>
-                                            <option value="3">Option 3</option>
-                                        </select>
-                                        <label>Medicine</label>
-                                    </div>
-                                    <div class="input-field col s6">
-                                        <input id="perscription_amount" type="text" class="validate">
-                                        <label for="perscription_amount">Amount</label>
-                                    </div>
-                                </div>
+        <div class="row content-area" id="authorization_card" style="display: none">
+            <div class="col s8">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <span class="card-sub-title">Pending Authorizations</span>
+                        </span>
+                        <div class="row search">
+                            <div class="search-input input-field col s12">
+                                <input type="text" id="authorizations_search" class=" validate">
+                                <label for="authorizations_search" class="active">Search Authorizations</label>
                             </div>
                         </div>
-                        <div class="card-action">
-                            <a class="waves-effect waves-light btn blue">Save</a>
+                        <div class="content-container">
+                            <ul class="collapsible" id="authorization_table"></ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-  </body>
+
+        <section class="cd-timeline js-cd-timeline" id="timeline_section" style="display: none">
+            <div class="cd-timeline__container" id="timeline_table">
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Re-usable scripts. -->
+    <script type="text/html" id="patient_entry_template">
+    <li data-id="%id%" data-auth-id="%auth_id%">
+        <div class="collapsible-header">%name%</div>
+        <div class="collapsible-body">
+            <div class="row row-data-field">
+                <div class="input-field col s5">
+                    <select id="prescription_med">
+                        <option value="" disabled selected>Choose the prescription medicine</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label>Medicine</label>
+                </div>
+                <div class="input-field col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key btn-medicine-policy" 
+                    data-position="top" 
+                    data-tooltip="Data Policies">
+                        <i class="tiny material-icons">vpn_key</i>
+                    </a>
+                </div>
+                <div class="input-field col s5">
+                    <input class="prescription_amount" type="text" class="validate">
+                    <label for="prescription_amount">Amount</label>
+                </div>
+                <div class="input-field col s1">
+                    <a class="btn-floating btn-small waves-effect waves-light blue tooltipped btn-key btn-amount-policy" 
+                    data-position="top" 
+                    data-tooltip="Data Policies">
+                        <i class="tiny material-icons">vpn_key</i>
+                    </a>
+                </div>
+            </div>
+            <a class="waves-effect waves-light btn blue">Save</a>
+        </div>
+    </li>
+    </script>
+
+    <script type="text/html" id="policy_entry_template">
+    <li>
+        <div class="row row-data-field">
+            <div class="input-field col s5">
+                <select id="policy_type">
+                    <option value="" disabled selected>Choose a data policy type</option>
+                    <option value="1">Notify</option>
+                    <option value="2">Verify</option>
+                </select>
+                <label>Policy Type</label>
+            </div>
+            <div class="input-field col s5">
+                <input id="authy_id" type="text" class="validate">
+                <label for="authy_id">Authy ID</label>
+            </div>
+        <a class="waves-effect waves-light btn red col s2">Remove</a>
+    </li>
+    </script>
+
+    <script type="text/html" id="authorization_entry_template">
+    <li data-patient="%patient_id%" data-id="%authorization_id%">
+        <div class="collapsible-header">%name%</div>
+        <div class="collapsible-body">
+            <div class="authorization-subtitle">
+                A change has been made to %name%'s prescription for
+                <span id="auth_prescription_med">%medical_prescription%</span>
+                from
+                <span id="auth_original">%medical_old_value%</span>
+                to
+                <span id="auth_new">%medical_new_value%</span>.
+                <br /> As an authorizer for this user, you are required to approve this change.
+            </div>
+            <div class="authorization-actions">
+                <a class="waves-effect waves-light btn blue">Approve</a>
+                <a class="waves-effect waves-light btn red">Reject</a>
+            </div>
+        </div>
+    </li>
+</script>
+
+    <script type="text/html" id="timeline_entry_template">
+    <div class="cd-timeline__block js-cd-block" data-id="%id%">
+        <div class="cd-timeline__img cd-timeline__img--%color% js-cd-img">
+                <i class="material-icons">%icon%</i>
+        </div>
+
+        <div class="cd-timeline__content js-cd-content">
+            <h2>%title%</h2>
+            <p>%action%</p>
+            <span class="cd-timeline__date">%date%</span>
+        </div>
+    </div>
+</script>
+
+    <!-- Modals & Dropdowns -->
+    <div id="dataPolicyModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 id="dataPolicyModalHeader" class="col s12">Data Policies</h4>
+
+            <h6 class="left">View Data</h6>
+            <a id="addPolicyButton" class="col s6 waves-effect waves-light btn-small blue right">Add Policy</a>
+            <br/>
+            <ul id="select_policies_table"></ul>
+
+            <h6 class="left">Change Data</h6>
+            <a id="addPolicyButton" class="col s6 waves-effect waves-light btn-small blue right">Add Policy</a>
+            <br/>
+            <ul id="update_policies_table"></ul>
+
+            <h6 class="left">Delete Data</h6>
+            <a id="addPolicyButton" class="col s6 waves-effect waves-light btn-small blue right">Add Policy</a>
+            <br/>
+            <ul id="delete_policies_table"></ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat ">Done</a>
+        </div>
+    </div>
+
+    <div id="addPatientModal" class="modal">
+        <div class="modal-content">
+            <h4>Add Patient</h4>
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="first_name" type="text" class="validate">
+                            <label for="first_name">First Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="last_name" type="text" class="validate">
+                            <label for="last_name">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="authy" type="text" class="validate">
+                            <label for="authy">Authy ID</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-light btn blue">Add Patient</a>
+        </div>
+    </div>
+</body>
+
 </html>
