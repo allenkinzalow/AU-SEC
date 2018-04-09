@@ -46,6 +46,14 @@ class Authorizer_User(Base):
 	def __repr__(self):
 		return '<User %r>: %r: %r' % self.data_id, self.preferred_comms, self.contact_info
 
+	def get_object(self):
+		return {
+			'auth_id': self.auth_id,
+			'preferred_comms': self.preferred_comms,
+			'contact_info': self.contact_info,
+			'name': self.name
+		}
+
 
 class Policy(Base):
 	__tablename__ = 'policies'

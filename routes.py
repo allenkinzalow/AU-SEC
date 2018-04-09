@@ -44,6 +44,16 @@ def edit_user():
     db_session.commit()
     return make_response(jsonify({"auth_id": user.auth_id, "status": "success"}), 200)
 
+# {name: name}
+@routes.route('/api/auth_users/get_user', methods=['GET'])
+def get_user():
+    if not check_json(request.json, 'name'):
+        abort(400, {'message': 'Essential json keys not found (name)'})
+
+    users = Authorizer_User.query.filter(Authorizer_User.name == request.json['name']).all()
+    return make_response(jsonify({'auth_users': [user.get_object() for user in users]}))
+
+
 def create_auth_group(authorizers):
     """ Helper function to create an authorization group and populate the rows in groups table """
     group_id = generate_uuid()
@@ -131,7 +141,7 @@ def get_policies():
     return make_response(jsonify({'policies': policies, 'status': 'success'}))
 
 #{data: {column_names: column_data}, table_name: table, data_id: id}
-@routes.route('/api/data/update', methods=['PUT'])
+@routes.route('/api/data/update', methods=['POST'])
 def update_data():
     if not check_json(request.json, 'data_id', 'data'):
         abort(400, {'message': 'Essential json keys not found (data_id, data)'})
