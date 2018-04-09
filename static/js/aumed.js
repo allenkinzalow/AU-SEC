@@ -52,9 +52,11 @@ AUMed = {
                 AUMed.Util.api({
                     url: 'patients',
                     callback: (data) => { 
-                        data.forEach(d => {
-                            self._patients.push(new AUMed.Schema.Patient(d));
-                        });
+                        if (!data['error']) {
+                            data.forEach(d => {
+                                self._patients.push(new AUMed.Schema.Patient(d));
+                            });
+                        }
                         self.populate();
                     }
                 });
@@ -105,9 +107,18 @@ AUMed = {
                 initializeTimeline();
                 M.AutoInit();
             },
-            open: function() {
+            open: function(data_id) {
+                var self = this;
                 $('#timeline_section').show();
-                this.populate();
+                AUMed.Util.api({
+                    url: 'history/' + data_id,
+                    callback: (data) => { 
+                        data.forEach(d => {
+                            self._patients.push(new AUMed.Schema.History(d));
+                        });
+                        self.populate();
+                    }
+                });
             },
             close: function() {
                 $('#timeline_section').hide();
@@ -115,15 +126,54 @@ AUMed = {
         },
         policies: {
             _policies: [],
-            populate: function() {                
-                $('#policies_table').html(
-                    this._policies.reduce(function(str, patient) {
+            populate: function(column_name) {
+                this._policies = this._policies.filter(p => p.policy_bitwise == 0);
+                updatePolicies = this._policies.filter(p => p.bit_test(6) || p.bit_test(5));
+                deletePolicies = this._policies.filter(p => p.bit_test(4) || p.bit_test(3));
+                selectPolicies = this._policies.filter(p => p.bit_test(2) || p.bit_test(1));
+
+                $('#select_policies_table').html(
+                    updatePolicies.reduce(function(str, policy) {
                         return str +  AUMed.Util.template($('#policy_entry_template').html(), {
-                            id: patient.data_id,
-                            name: patient.name
+                            id: policy.policy_id,
+                            auth: policy.bit_test(6),
+                            notify: policy.bit_test(5),
                         });
                     }, "")
                 );
+                
+                $('#delete_policies_table').html(
+                    deletePolicies.reduce(function(str, policy) {
+                        return str +  AUMed.Util.template($('#policy_entry_template').html(), {
+                            id: policy.policy_id,
+                            auth: policy.bit_test(4),
+                            notify: policy.bit_test(3),
+                        });
+                    }, "")
+                );
+
+                $('#select_policies_table').html(
+                    selectPolicies.reduce(function(str, policy) {
+                        return str +  AUMed.Util.template($('#policy_entry_template').html(), {
+                            id: policy.policy_id,
+                            auth: policy.bit_test(2),
+                            notify: policy.bit_test(1),
+                        });
+                    }, "")
+                );
+
+                this._policies.forEach(p => {
+                    notify 
+                    $("#policy_type_" + p.id + " select").val("val2");
+                });
+
+                $('.column-name-header').html(AUMed.Util.capitalize(column_name));
+
+                $(document).on('click', '.btn-delete-policy', function () {
+                    var id = $(this).parents('li').first().data('auth-id');
+                    console.log(id);
+                    AUMed.UI.policies.open(id, 'amount');
+                });
                 
                 M.AutoInit();
                 elem = document.querySelector('#dataPolicyModal');
@@ -131,6 +181,7 @@ AUMed = {
                 instance.open();
             },
             open: function(auth_id, column_name) {
+                this._policies = [];
                 var self = this;
                 AUMed.Util.api({
                     url: 'policies/get_policies',
@@ -140,11 +191,12 @@ AUMed = {
                         'auth_ids': [auth_id]
                     },
                     callback: (data) => { 
-                        data.forEach(d => {
-                            console.log(d);
-                            self._policies.push(new AUMed.Schema.Policy(d));
+                        allPolicies = data['policies'];
+                        (allPolicies || []).forEach(p => {
+                            console.log(p);
+                            self._policies.push(new AUMed.Schema.Policy(p));
                         });
-                        self.populate();
+                        self.populate(column_name);
                     }
                 });
             },

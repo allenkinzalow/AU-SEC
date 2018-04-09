@@ -21,7 +21,7 @@ def index():
 @routes.route('/api/patients', methods=['GET'])
 def get_all_patients():
     patients = Patient.query.all()
-    return jsonify([p.to_json() for p in patients])
+    return jsonify([p.get_object() for p in patients])
 
 # {preferred_comms: <integer>{1,2,3}, contact_info: <string>, name: name}
 @routes.route('/api/auth_users/create_user', methods=['POST'])
@@ -57,7 +57,6 @@ def get_user():
 
     users = Authorizer_User.query.filter(Authorizer_User.name == request.json['name']).all()
     return make_response(jsonify({'auth_users': [user.get_object() for user in users]}))
-
 
 def create_auth_group(authorizers):
     """ Helper function to create an authorization group and populate the rows in groups table """
@@ -141,7 +140,7 @@ def get_policies():
     else:
         abort(400, {'message': 'One of (policy_ids, auth_ids, data_ids) needed'})
     if not policies:
-        abort(400, {'message': 'No policies with those ids exist'})
+        return make_response(jsonify({'policies': [], 'status': 'error'}))
     if 'column_names' in request.json:
         policies = [policy.get_object() for policy in policies if policy.column_name in request.json['column_names']]
     else:
@@ -343,7 +342,7 @@ def get_auth_update():
     db_session.commit()
     return uuid, auth_result
 
-@routes.route('/api/history/<int:data_id>', methods=['GET'])
+@routes.route('/api/history/<data_id>', methods=['GET'])
 def get_history(data_id):
     entries = History.query.filter(History.data_id==data_id)
     return jsonify([e.get_object() for e in entries])

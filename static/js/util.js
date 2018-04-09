@@ -35,5 +35,8 @@ AUMed.Util = {
             localStorage.setItem('user_type', "doctor");
         }
         location.reload();
-    }
+    },
+    capitalize: function(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    },
 };
