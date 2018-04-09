@@ -1,5 +1,6 @@
 from flask import Flask
-import mysql.connector
+
+import pymysql
 from config import DEFAULT_DATA_TABLE
 
 #craftQuery(dictionary)
