@@ -328,18 +328,18 @@ def get_auth_update():
     print(pending_auth)
     if status == 'approved':
         db_session.delete(pending_auth)
-        if Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
-            query = Pending_Policy.query.filter_by(Pending_Auth.group_id == pending_auth.group_id)
+        if Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).count() == 0:
+            query = Pending_Policy.query.filter(Pending_Auth.group_id == pending_auth.group_id)
             Patient.query.execute(query.command)
     elif status == 'denied':
         # find pending policy and drop
-        Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
-        Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()
+        Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()
     #else if status == 'expired':
     else:
         # find pending policy and drop for now
-        Pending_Policy.query.filter_by(Pending_Policy.group_id == pending_auth.group_id).delete()
-        Pending_Auth.query.filter_by(Pending_Auth.group_id == pending_auth.group_id).delete()  
+        Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()  
     auth_result=(request.json['success'])
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
     ##Similar to send_auth_req, probably aren't going to be returning the uuid/auth_result, just placeholding for now.
