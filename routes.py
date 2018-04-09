@@ -328,7 +328,7 @@ def get_auth_update():
     print(pending_auth)
     if status == 'approved':
         db_session.delete(pending_auth)
-        needed_auths = Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).all()
+        needed_auths = Pending_Auth.query.filter(Pending_Auth.auth_group_id == pending_auth.group_id).all()
         print(needed_auths)
         if needed_auths:
             print("RUN THE COMMAND")
@@ -336,12 +336,12 @@ def get_auth_update():
             db_session.execute(pending_policy.command)
     elif status == 'denied':
         # find pending policy and drop
-        Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Policy.query.filter(Pending_Policy.auth_group_id == pending_auth.group_id).delete()
         Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()
     #else if status == 'expired':
     else:
         # find pending policy and drop for now
-        Pending_Policy.query.filter(Pending_Policy.group_id == pending_auth.group_id).delete()
+        Pending_Policy.query.filter(Pending_Policy.auth_group_id == pending_auth.group_id).delete()
         Pending_Auth.query.filter(Pending_Auth.group_id == pending_auth.group_id).delete()  
     
     ##Use uuid to determine which pending policy the result applies to and make changes (or don't) accordingly. 
